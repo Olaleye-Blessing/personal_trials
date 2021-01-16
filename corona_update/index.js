@@ -232,7 +232,7 @@ function updateCountryData(data) {
 
     <div class="result__population"><div>Population</div> <span>${data.population}</span></div>
 
-    <div class="result__continent"><div>Continent</div> <span>${data.continent}</span></div>
+    <div class="result__continent"><div>Continent</div> <span>${data.continent || '____'}</span></div>
 
     </div>
     `;
