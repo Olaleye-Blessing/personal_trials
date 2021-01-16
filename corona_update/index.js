@@ -179,6 +179,8 @@ countrySelect.addEventListener('change', async function (event) {
             let flagFigure = document.createElement('figure');
             flagFigure.innerHTML = `<img src="${selectedFlag}" alt="${selectedCountry.text}'s flag">`
             document.querySelector('.result__name').append(flagFigure);
+        }
+        if (!countryData.message) {
             graphContainer.innerHTML = `<header class="graph__header"><p>Percentages are relative to <small>CASES</small></p>
     <div class="graph__key">
         <div class="key-r">recovered</div>
@@ -190,13 +192,6 @@ countrySelect.addEventListener('change', async function (event) {
         }
         enableSelection();
     }, 2100);
-    // if (selectedFlag && !countryData.message) {
-    //     // console.log(selectedFlag);
-    //     let flagFigure = document.createElement('figure');
-    //     flagFigure.innerHTML = `<img src="${selectedFlag}" alt="${selectedCountry.text}'s flag">`
-    //     document.querySelector('.result__name').append(flagFigure);
-    // }
-    
 })
 
 function updateCountryData(data) {
