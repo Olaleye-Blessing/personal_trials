@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+    <script type="module" src="index.js" defer></script>
+</head>
+<body>
+    <header class="heading">
+        <div class="width flex">
+            <p class="logo">Quiz<span aria-hidden="true">home</span></p>
+            <div
+                tabindex="0"
+                class="mode"
+                aria-label="click to toggle mode"
+            >
+                <figure class="mode__image-container">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="ionicon"
+                        viewBox="0 0 512 512"
+                    >
+                        <title>Moon</title>
+                        <path
+                            d="M160 136c0-30.62 4.51-61.61 16-88C99.57 81.27 48 159.32 48 248c0 119.29 96.71 216 216 216 88.68 0 166.73-51.57 200-128-26.39 11.49-57.38 16-88 16-119.29 0-216-96.71-216-216z"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="32"
+                        />
+                    </svg>
+                </figure>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="moving-bg">
+            <div class="moving-cont" id="quiz-select">
+                <div>Welcome to this fun quiz app where you get to answer different questions based on the quiz type you choose. I hope you have fun playing this :)</div>
+            </div>
+        </section>
+        <form class="width">
+            <ul>
+                <li>
+                    <label for="number">Number Of Questions</label>
+                    <input type="number" name="number" id="number" placeholder="Maximum of 50 question" autocomplete="off">
+                </li>
+                <li>
+                    <label for="cathegory">Category</label>
+                    <div class="select-wrapper">
+                        <select name="category" id="category">
+                            <option value="any" selected>Any Category</option>
+                        </select>
+                    </div>
+                </li>
+                <li>
+                    <label for="difficulty">Select Difficulty</label>
+                    <div class="select-wrapper">
+                        <select name="difficulty" id="difficulty">
+                            <option value="any" selected>Any</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </li>
+                <li>
+                    <label for="type">Select Type</label>
+                    <div class="select-wrapper">
+                        <select name="type" id="type">
+                            <option value="any" selected>Any Type</option>
+                            <option value="multiple">Multiple Choice</option>
+                            <option value="boolean">True/False</option>
+                        </select>
+                    </div>
+                </li>
+                <li>
+                    <button data-btn="start" class="btn">Start Quiz</button>
+                </li>
+            </ul>
+        </form>
+
+        <section class="allquiz width">
+            <ul class="quiz__lists">
+                <!-- <li class="quiz__list">
+                    <div class="quiz__questions" data-number="que1">Who was the first explorer to sail to North America?</div>
+                    <ul class="quiz__answers">
+                        <li>
+                            <input type="radio" name="que1" id="Lei">
+                            <label for="Lei">Leif Erikson</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que1" id="Chr">
+                            <label for="Chr">Christopher Columbus</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que1" id="Fer">
+                            <label for="Fer">Ferdinand Magellan</label>
+                            
+                        </li>
+                    </ul>
+                    <div>
+                        <button class="quiz__next btn">Next</button>
+                    </div>
+                </li>
+                <li class="quiz__list">
+                    <div class="quiz__questions" data-number="que2">Which sign of the zodiac is represented by the Crab?</div>
+                    <ul class="quiz__answers">
+                        <li>
+                            <input type="radio" name="que2" id="Lib">
+                            <label for="Lib">Libra</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que2" id="Vir">
+                            <label for="Vir">Virgo</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que2" id="Can">
+                            <label for="Can">Cancer</label>
+                        </li>
+                    </ul>
+                    <div>
+                        <button class="quiz__next btn">Next</button>
+                    </div>
+                </li>
+                <li class="quiz__list">
+                    <div class="quiz__questions" data-number="que3">When did Jamaica recieve its independence from England? </div>
+                    <ul class="quiz__answers">
+                        <li>
+                            <input type="radio" name="que3" id="196">
+                            <label for="196">1962</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que3" id="149">
+                            <label for="149">1492</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="que3" id="198">
+                            <label for="198">1987</label>
+                        </li>
+                    </ul>
+                    <div>
+                        <button class="quiz__next btn">Next</button>
+                    </div>
+                </li> -->
+            </ul>
+        </section>
+
+        <section class="result width">
+            <!-- <p class="result__score">You scored <span class="result__correct">10</span> out of <span class="result__total">20</span></p>
+            <ol>
+                <li>
+                    <p class="result__ques"><span>1.</span>The average lifespan of a wildcat is only around 5-6 years. </p>
+                    <p>Your answer: <span class="user__ans">DragonForce's 'Through the Fire and Flames' is widely</span></p>
+                    <p>Correct Answer: <span class="real__ans">DragonForce's 'Through the Fire and Flames' is widely</span></p>
+                </li>
+                <li><span>2.</span>
+                    <p>Your answer: <span class="">44</span></p>
+                    <p>Correct Answer: <span class="">74</span></p>
+                </li>
+                <li><span>3.</span>
+                    <p>Your answer: <span class="">44</span></p>
+                    <p>Correct Answer: <span class="">74</span></p>
+                </li>
+                <li><span>3.</span>
+                    <p>Your answer: <span class="">44</span></p>
+                    <p>Correct Answer: <span class="">74</span></p>
+                </li>
+                <li><span>3.</span>
+                    <p>Your answer: <span class="">44</span></p>
+                    <p>Correct Answer: <span class="">74</span></p>
+                </li>
+                <li><span>3.</span>
+                    <p>Your answer: <span class="">44</span></p>
+                    <p>Correct Answer: <span class="">74</span></p>
+                </li>
+            </ol>
+            <div class="quiz__next-btn"><button data-btn="anotherquiz" class="btn another-quiz">Take Another Quiz</button></div> -->
+        </section>
+    </main>
+</body>
+</html>
