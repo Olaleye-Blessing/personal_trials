@@ -28,9 +28,9 @@
 
 .quiz {
     &__display {
-        display: block;
-        visibility: visible;
-        opacity: 0;
+        // display: block !important;
+        // visibility: visible;
+        // opacity: 0;
     }
     &__opaq {
         opacity: 1;

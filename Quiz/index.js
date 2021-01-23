@@ -6,6 +6,8 @@ import { quizParentCont, questionCont, questionDetail } from "./questionCont.js"
 
 import { questionLoader } from "./loader.js";
 
+const body = document.body;
+
 const modeSwitch = document.querySelector('.mode');
 
 const form = document.querySelector('form');
@@ -16,12 +18,13 @@ const startQuizBtn = form.querySelector('[data-btn="start"]');
 
 const resultCont = document.querySelector('section.result');
 
+const movingBg = document.querySelector('.moving-bg');
+
 modeSwitch.addEventListener('click', switchMode);
 
 modeSwitch.addEventListener('keydown', event => {
     if (event.key == " ") {
         event.preventDefault();
-        // console.log('yes');
         switchMode();
     }
 })
@@ -44,18 +47,23 @@ let allCategory;
 
 let numberOfFetchingOptions = 0;
 
-let numberOfFetchingQuestions = 0;
+let numberOfFetchingOptionsQuestions = 0;
+
+function errorMessage() {
+    let errorP = document.createElement('p');
+    errorP.classList.add('error_para');
+    errorP.innerHTML = `Seems like there's network error! Please, press <button class="reload" data-button="reload">reload</button>`;
+    return errorP;
+}
 
 async function loadCategoryOption() {
     try {
         let categoryRes = await fetch('https://opentdb.com/api_category.php');
         allCategory = await categoryRes.json();
         allCategory = allCategory.trivia_categories;
-        // console.log(allCategory);
         return allCategory;
     } catch (error) {
         if (error instanceof TypeError) {
-            // numberOfFetchingOptions += 1;
             if (numberOfFetchingOptions == 4) {
                 throw new NetworkError('Network Error!!')
             }
@@ -77,9 +85,25 @@ async function loadOptions() {
         await loadCategoryOption();
         fillOptions(allCategory);
     } catch (error) {
-        console.warn(error.name)
+        if (error instanceof NetworkError) {
+            let message = errorMessage();
+            movingBg.after(message);
+        }
     }
 }
+
+document.addEventListener('click', event => {
+    let reloadBtn = event.target.closest('[data-button="reload"]');
+    if (!reloadBtn) {
+        return;
+    }
+    reloadBtn.parentElement.style.opacity = 0;
+    setTimeout(() => {
+        reloadBtn.parentElement.remove();
+        loadOptions();
+    }, 1100);
+    
+})
 
 loadOptions();
 
@@ -87,15 +111,29 @@ form.addEventListener('submit', getQuiz);
 
 async function getQuiz(event) {
     event.preventDefault();
+
+    quizParentCont.innerHTML = ``;
+    resultCont.innerHTML = ``;
+
+    if (document.querySelector('form [data-button="reload"]')) {
+        return;
+    }
+
+    if (document.querySelector('[data-description = "questionError"]')) {
+        let currentErr = document.querySelector('[data-description = "questionError"]');
+        currentErr.style.opacity = 0;
+        setTimeout(() => {
+            currentErr.remove();
+        }, 1100);
+    }
+
     let numberOfQues = form.querySelector('#number').value;
 
     if (!Number(numberOfQues)) {
-        console.log('Enter a number')
         return;
     }
 
     if (+numberOfQues > 50) {
-        console.log('Maximum of 50 question');
         return;
     }
 
@@ -106,8 +144,6 @@ async function getQuiz(event) {
     let loaderCont = questionLoader();
 
     loaderCont.classList.add('aniOpacity');
-
-    // loaderCont.style.opacity = 1;
 
     allQuizCont.after(loaderCont);
 
@@ -122,27 +158,33 @@ async function getQuiz(event) {
 
     let categoryVal = category.value;
 
-    // setQuizParam(numberOfQues, categoryVal, difficulty, type);
-
     let quizUrl = setQuizParam(numberOfQues, categoryVal, difficulty, type);
 
-    let allQuestions = await fetchQuiz(quizUrl);
+    let allQuestions = [];
 
-    // console.log(allQuestions);
-
-    allQuestions = checkSuccessfulQuiz(allQuestions);
-
-    // console.log(allQuestions);
-
-    // quizParentCont(allQuestions);
+    try {
+        allQuestions = await fetchQuiz(quizUrl);
+        allQuestions = checkSuccessfulQuiz(allQuestions);
+    } catch (error) {
+        if (error instanceof NetworkError || error instanceof ResultError) {
+            let errorMes = errorMessage();
+            errorMes.innerHTML = error.message;
+            errorMes.setAttribute('data-description', 'questionError');
+            form.after(errorMes);        
+            enableFormElements();
+        }
+    }
+    
     loaderCont.classList.remove('aniOpacity');
     loaderCont.classList.add('removeOpac');
 
     setTimeout(() => {
         loaderCont.remove();
     }, 2100);
-    questionCont(allQuestions);
-    // console.log(questionDetail);
+
+    if (allQuestions) {
+        questionCont(allQuestions);
+    }
 }
 
 function checkSuccessfulQuiz(response) {
@@ -156,11 +198,12 @@ async function fetchQuiz(url) {
     try {
         let urlRes = await fetch(url);
         let questions = await urlRes.json();
+        numberOfFetchingOptionsQuestions = 0;
         return questions;
     } catch (error) {
         if (error instanceof TypeError) {
             if (numberOfFetchingOptionsQuestions == 4) {
-                throw new NetworkError('Network Error!!')
+                throw new NetworkError('Network Error!! Pls Check your network before starting the quiz')
             }
             numberOfFetchingOptionsQuestions += 1;
             await fetchQuiz(url);
@@ -194,14 +237,15 @@ function quizButtons(event) {
     let quizBtnSet = event.target.dataset.btn;
     if (!quizBtnSet) return;
     let nextBtn = event.target;
-    // console.log(event.target);
+    
     nextBtn.disabled = 'true';
     nextBtn.classList.add('disabled');
     if (quizBtnSet == 'next') {
         let parentElement = event.target.closest('li');
 
         if (parentElement.nextElementSibling) {
-            parentElement.nextElementSibling.classList.add('quiz__display');
+            // parentElement.nextElementSibling.classList.add('quiz__display');
+            parentElement.nextElementSibling.style.display = "block";
             setTimeout(() => {
                 parentElement.nextElementSibling.classList.add('quiz__opaq');
             }, 1000);
@@ -221,34 +265,24 @@ function quizDone() {
             input.nextElementSibling.classList.add('disabled');
         }
     }
-    // resultCont.innerHTML = `<p class="result__score">You scored <span class="result__correct">10</span> out of <span class="result__total">20</span></p>`
-    // loadResult(questionDetail);
-    // console.log('yes');
+    
     let userAnswers = checkAnswers();
     let correctAnswers = 0;
-    // console.log(userAnswers)
+    
     correctAnswers = loadResult(questionDetail, userAnswers, correctAnswers);
-    // console.log(correctAnswers);
-    // correctAnswers = loadResult
 
     resultCont.innerHTML = `<p class="result__score">You scored <span class="result__correct">${correctAnswers}</span> out of <span class="result__total">${userAnswers.length}</span></p>`;
 
     let orderedResult = document.createElement('ol');
     orderedResult.innerHTML = ``;
-    // console.log(questionDetail);
+    
     for (let eachdetail in questionDetail) {
         orderedResult.innerHTML += `<li>
         <p class="result__ques"><span>${+eachdetail + 1}.</span>${questionDetail[eachdetail][0]}</p>
         <p>Your answer: <span class="user__ans">${userAnswers[eachdetail]}</span></p>
         <p>Correct Answer: <span class="real__ans">${questionDetail[eachdetail][1]}</span></p>
     </li>`;
-    // resultCont.append(orderedResult);
     
-        // console.log(`${+eachdetail + 1}.`)
-        // console.log(`Qusetion: ${questionDetail[eachdetail][0]}`)
-        // console.log(`User ans: ${userAnswers[eachdetail]}`)
-        // console.log(`Correct ans: ${questionDetail[eachdetail][1]}`)
-        // console.log(" ");
     }
     resultCont.append(orderedResult);
     let divBtn = document.createElement('div');
@@ -261,11 +295,8 @@ function checkAnswers() {
     let allAnswers = [];
     for (let answers of document.querySelectorAll('.quiz__answers')) {
         let answered = false;
-        // console.log(answers);
         for (let answer of answers.querySelectorAll('input')) {
             if (answer.checked) {
-                // console.log(answer);
-                // console.log(answer.nextElementSibling.textContent);
                 answered = true;
                 allAnswers.push(answer.nextElementSibling.textContent);
             }
@@ -274,16 +305,12 @@ function checkAnswers() {
             allAnswers.push('----');
         }
     }
-    // console.log(allAnswers);
     return allAnswers;
 }
 
 function loadResult(results, userAnswers, correctAnswers) {
     let anserNum = 0;
     for (let result in results) {
-        // console.log(result)
-        // console.log(results[result][1]);
-        // console.log(userAnswers[anserNum]);
         if (results[result][1] == userAnswers[anserNum]) {
             correctAnswers += 1;
         }
@@ -294,9 +321,7 @@ function loadResult(results, userAnswers, correctAnswers) {
 
 function disableFormElments() {
     for (let elem of form.elements) {
-        // console.log(elem);
         elem.disabled = true;
-        // elem.classList.add('disabled');
     }
     form.classList.add('disabled');
 }
@@ -317,11 +342,11 @@ function takeAnother(event) {
     if (!btnAnother) return;
     let formCoordinates = form.getBoundingClientRect();
     let formCoordY = formCoordinates.top + window.pageYOffset;
-    // console.log(formCoordY);
+
     window.scrollTo(0, formCoordY - 100);
 
-    quizParentCont.innerHTML = ``;
-    resultCont.innerHTML = ``;
+    // setTimeout(() => {
+    //     quizParentCont.innerHTML = ``;
+    //     resultCont.innerHTML = ``;
+    // }, 5000);
 }
-
-// console.log(resultCont);

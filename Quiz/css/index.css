@@ -101,6 +101,10 @@ html {
           box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   -webkit-transition: background 1s linear, color 1s linear;
   transition: background 1s linear, color 1s linear;
@@ -125,7 +129,6 @@ body {
   line-height: 1.5;
   color: var(--text-color);
   background-color: var(--main-bg);
-  padding-bottom: 45rem;
   font-weight: 400;
 }
 
@@ -140,6 +143,15 @@ ul {
 
 li {
   list-style: none;
+}
+
+fieldset {
+  border: none;
+}
+
+figure {
+  height: 3rem;
+  width: 3rem;
 }
 
 header {
@@ -298,12 +310,14 @@ form button:hover {
 }
 
 .quiz__list {
-  display: none;
-  visibility: hidden;
   opacity: 0;
-  -webkit-transition: visibility 2s linear, opacity 2s linear;
-  transition: visibility 2s linear, opacity 2s linear;
+  -webkit-transition: opacity 1s linear;
+  transition: opacity 1s linear;
   border-bottom: 0.1rem solid red;
+}
+
+.quiz__list:not(:first-child) {
+  display: none;
 }
 
 .quiz__list:last-child {
@@ -325,12 +339,8 @@ form button:hover {
   margin-top: 0.7rem;
 }
 
-.quiz__answers li {
-  margin-bottom: 0.4rem;
-  position: relative;
-}
-
 .quiz__answers li input {
+  display: inline-block;
   width: 2rem;
   height: 2rem;
   vertical-align: -0.4rem;
@@ -338,14 +348,19 @@ form button:hover {
   cursor: pointer;
 }
 
+.quiz__answers li input:focus + label::before {
+  -webkit-box-shadow: 0 0 0.7rem var(--text-color);
+          box-shadow: 0 0 0.7rem var(--text-color);
+}
+
 .quiz__answers li input:checked + label::after {
   background-color: #0cc90c;
 }
 
 .quiz__answers li label {
+  position: relative;
   font-size: 2rem;
   margin-left: 0.6rem;
-  position: relative;
   cursor: pointer;
   display: inline-block;
 }
@@ -359,11 +374,9 @@ form button:hover {
   border-radius: 50%;
   top: 0.4rem;
   left: -3.2rem;
-  display: inline-block;
 }
 
 .quiz__answers li label::after {
-  display: inline-block;
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
@@ -392,6 +405,7 @@ form button:hover {
 
 .result {
   margin-top: 5rem;
+  padding-bottom: 6rem;
 }
 
 .result__score {
@@ -566,6 +580,82 @@ form button:hover {
   }
 }
 
+.error_para {
+  color: red;
+  padding: 0.2rem 0.5rem;
+  max-width: -webkit-max-content;
+  max-width: -moz-max-content;
+  max-width: max-content;
+  margin: 1.4rem auto;
+  -webkit-transition: all 1s linear;
+  transition: all 1s linear;
+}
+
+.reload {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border: 0.2rem solid;
+  color: green;
+  background-color: #acf8a9;
+  cursor: pointer;
+  -webkit-transition: all 1s linear;
+  transition: all 1s linear;
+  border-radius: 0.5rem;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+}
+
+.reload:hover {
+  opacity: 0.6;
+}
+
+.social__links {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 1rem;
+}
+
+.social__links > a {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 1 4rem;
+          flex: 0 1 4rem;
+  color: inherit;
+  padding: 1rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.social__links > a svg {
+  fill: currentColor;
+}
+
+.social__links > a:hover figure svg {
+  fill: green;
+}
+
+.social__links img,
+.social__links svg {
+  max-width: 100%;
+}
+
+.copy {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 0.8rem 1.5rem;
+}
+
 .flex {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -596,12 +686,6 @@ form button:hover {
 .logo span {
   font-size: 0.9rem;
   letter-spacing: -0.3rem;
-}
-
-.quiz__display {
-  display: block;
-  visibility: visible;
-  opacity: 0;
 }
 
 .quiz__opaq {

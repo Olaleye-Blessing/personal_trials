@@ -29,8 +29,12 @@ html {
 }
 
 // html:focus-within {
-    // scroll-behavior: smooth;
+//     scroll-behavior: smooth;
 // }
+
+html {
+    scroll-behavior: smooth;
+}
 
 * {
     transition: background 1s linear, color 1s linear;
@@ -54,15 +58,12 @@ body {
     line-height: 1.5;
     color: var(--text-color);
     background-color: var(--main-bg);
-    padding-bottom: 45rem;
     font-weight: 400;
 }
 
 header, .moving-bg, form, .allquiz, .result {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-    // padding-left: clamp(1rem, 1.5vw, 3rem);
-    // padding-right: clamp(1rem, 1.5vw, 3rem);
 }
 
 ul {
@@ -71,6 +72,15 @@ ul {
 
 li {
     list-style: none;
+}
+
+fieldset {
+    border: none;
+}
+
+figure {
+    height: 3rem;
+    width: 3rem;
 }
 
 // font-family: 'Amiri', serif; //body

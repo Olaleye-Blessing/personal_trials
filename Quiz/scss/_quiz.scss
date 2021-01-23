@@ -14,12 +14,11 @@
     }
 
     &__list {
-        display: none;
-        visibility: hidden;
         opacity: 0;
-        transition: visibility 2s linear, opacity 2s linear;
+        transition: opacity 1s linear;
         border-bottom: 0.1rem solid red;
         &:not(:first-child) {
+            display: none;
             // margin-top: 8rem;
         }
         &:last-child {
@@ -42,15 +41,20 @@
         margin-top: 0.7rem;
 
         li {
-            margin-bottom: 0.4rem;
-            position: relative;
+            // margin-bottom: 0.4rem;
+            // position: relative;
 
             input {
+                display: inline-block;
                 width: 2rem;
                 height: 2rem;
                 vertical-align: -0.4rem;
                 opacity: 0;
                 cursor: pointer;
+
+                &:focus + label::before {
+                    box-shadow: 0 0 0.7rem var(--text-color);
+                }
 
                 &:checked + label::after {
                     background-color: #0cc90c;
@@ -58,9 +62,9 @@
             }
 
             label {
+                position: relative;
                 font-size: 2rem;
                 margin-left: 0.6rem;
-                position: relative;
                 cursor: pointer;
                 display: inline-block;
 
@@ -73,11 +77,11 @@
                     border-radius: 50%;
                     top: 0.4rem;
                     left: -3.2rem;
-                    display: inline-block;
+                    // display: inline-block;
                 }
 
                 &::after {
-                    display: inline-block;
+                    // display: inline-block;
                     width: 1rem;
                     height: 1rem;
                     border-radius: 50%;

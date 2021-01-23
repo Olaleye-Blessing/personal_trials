@@ -3,7 +3,6 @@ function shuffle(answers) {
         const j = Math.floor(Math.random() * (i + 1));
         [answers[i], answers[j]] = [answers[j], answers[i]];
     }
-    // console.log(answers);
     return answers;
 }
 
@@ -12,7 +11,6 @@ export const quizParentCont = document.querySelector(".quiz__lists");
 export let questionDetail = {};
 
 export function questionCont(allquestions) {
-    // quizParentCont.innerHTML = ``;
     questionDetail = {};
     for (let i = 0; i < allquestions.length; i++) {
         
@@ -20,7 +18,8 @@ export function questionCont(allquestions) {
         questionDetail[i] = [list.question, list.correct_answer];
         let listCont = document.createElement("li");
         listCont.classList.add("quiz__list");
-        listCont.innerHTML = `<div class="quiz__questions" data-number="que${i}"><span>${i + 1}.</span> ${list.question}</div>`;
+        // listCont.innerHTML = `<div class="quiz__questions" data-number="que${i}"><span>${i + 1}.</span> ${list.question}</div>`;
+        listCont.innerHTML = `<fieldset class="quiz__questions" data-number="que${i}"><legend><span>${i + 1}.</span> ${list.question}</legend></fieldset>`;
 
         let listAnswers = document.createElement("ul");
         listAnswers.classList.add("quiz__answers");
@@ -46,30 +45,23 @@ export function questionCont(allquestions) {
         let btnCont = document.createElement("div");
         
         if (i == allquestions.length - 1) {
-            // console.log('yes');
             btnCont.innerHTML = `<button data-btn="finish" class="quiz__btn btn">Submit</button>`;
         } else {
             btnCont.innerHTML = `<button data-btn="next" class="quiz__btn btn">Next</button>`;
         }
         if (i == 0) {
             listCont.classList.add('quiz__display');    
-            // quizParentCont.classList.add("padding");
             setTimeout(() => {
                 quizParentCont.classList.add("padding");
                 listCont.classList.add('quiz__opaq')
             }, 1000);
         }
-        // listCont.classList.add('quiz__display');
-        // listCont.append(btnCont);
 
         setTimeout(() => {
             listCont.classList.add('quiz__display');
             listCont.append(btnCont);
             quizParentCont.append(listCont);
         }, 2300);
-        // quizParentCont.append(listCont);
-        // quizParentCont.classList.add("padding");
     }
-    // console.log(questionDetail);
 }
 
