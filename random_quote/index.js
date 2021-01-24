@@ -7,6 +7,14 @@ let allQuotes;
 
 let firstTime = 0;
 
+async function checkFirstTime() {
+    // check if request has been made
+    if (firstTime == 0) {
+        await getQuote(); // wait for request
+        firstTime += 1;
+    }
+}
+
 async function getQuote() {
     let response = await fetch("https://type.fit/api/quotes");
     allQuotes = await response.json();
@@ -14,21 +22,20 @@ async function getQuote() {
 
 async function updadteQuote() {
     let randomNumber = Math.floor(Math.random() * 1645);
-    await getQuote();
     let quote = allQuotes[randomNumber];
     quotePara.textContent = quote.text;
     quoteAuth.textContent = quote.author ? quote.author : "Unknown";
 }
 
-window.addEventListener('load', updadteQuote);
+window.addEventListener('DOMContentLoaded', async () => {
+    await checkFirstTime();
+    updadteQuote();
+});
 
 let timerId = setTimeout(async function slideQuote() {
-    if (firstTime == 0) {
-        await getQuote(); // wait for the quotes to be ready
-        firstTime += 1;
-    }
+    await checkFirstTime();
     updadteQuote();
-    timerId = setTimeout(slideQuote, 10000);
+    timerId = setTimeout(slideQuote, 45000);
 }, 0);
 
 btnQuote.onclick = function (event) {
@@ -36,6 +43,6 @@ btnQuote.onclick = function (event) {
     updadteQuote();
     timerId = setTimeout(async function slideQuote() {
         updadteQuote();
-        timerId = setTimeout(slideQuote, 10000);
-    }, 3000);
+        timerId = setTimeout(slideQuote, 45000);
+    }, 45000);
 }
