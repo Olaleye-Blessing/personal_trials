@@ -25,6 +25,8 @@ select {
 
     option {
         max-width: 10rem;
+        color: var(--main-bg);
+        background-color: var(--text-color);
     }
 }
 
