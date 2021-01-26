@@ -1,0 +1,63 @@
+:root {
+    --search-bg: #ec9e0cec;
+    --pure-black: #000;
+    --light-black: #323544;
+    --very-light-black: rgba(0, 0, 0, 0.1);
+    --div-black: #262936;
+    --pure-white: #fff;
+    --light-gray: #bfc1c8;
+    --light-blue: #009ad8;
+}
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+body {
+    font-size: 1.6rem;
+    line-height: 1.5;
+    min-height: 100vh;
+    position: relative;
+    background-color: var(--light-blue);
+    background-color: var(--search-bg);
+}
+
+main {
+    position: relative;
+}
+
+main, header {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+header {
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    background-color: var(--pure-black);
+    color: var(--light-blue);
+    span {
+        letter-spacing: -0.1rem;
+        font-size: 1rem;
+    }
+}
+
+figure {
+    width: 4rem;
+    height: 4rem;
+}
+
+svg, img {
+    max-width: 100%;
+}
+
+figcaption {
+    display: block;
+}
