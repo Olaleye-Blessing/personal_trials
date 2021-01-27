@@ -20,6 +20,7 @@ const searchInput = document.getElementById('search');
 
 const resultCont = document.querySelector('.result');
 
+// create loading indicator when a city/country is searched
 function createLoader() {
     let div = document.createElement('div');
     div.classList.add('cssload-container');
@@ -27,6 +28,7 @@ function createLoader() {
     return div;
 }
 
+// show a message when result is not found
 function notFoundDiv(message) {
     let cont = document.createElement('span');
     cont.classList.add('notFound');
@@ -40,6 +42,7 @@ function notFoundDiv(message) {
     }, 5000);
 }
 
+// disable form elements when searching is going on
 function disableFormElements() {
     for (let i = 0; i < form.elements.length; i++) {
         form.elements[i].classList.add('disabled');
@@ -47,6 +50,7 @@ function disableFormElements() {
     }
 }
 
+// enable form elements when searching is completed
 function enableFormElements() {
     for (let i = 0; i < form.elements.length; i++) {
         form.elements[i].classList.remove('disabled');
@@ -54,6 +58,8 @@ function enableFormElements() {
     }
 }
 
+// change video background based on weather condition
+// -- Firefox has an issue 
 function changeBgVideo(src) {
     videoCont.innerHTML = ``;
     videoCont.innerHTML = `<video class="bg__video-content" autoplay muted loop>
@@ -62,58 +68,7 @@ function changeBgVideo(src) {
     </video>`
 }
 
-function myDate(milliseconds) {
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    
-    let dateObj = new Date(milliseconds);
-    
-    let day = days[dateObj.getDay()];
-    let date = dateObj.getDate();
-    let month = months[dateObj.getMonth()]
-    let hours = dateObj.getHours();
-    let mins = dateObj.getMinutes();
-    let secs = dateObj.getSeconds();
-
-    if (hours < 10) {
-        hours = `0${hours}`;
-    }
-
-    if (mins < 10) {
-        mins = `0${mins}`;
-    }
-
-    if (secs < 10) {
-        secs = `0${secs}`;
-    }
-    
-    return [day, `${date} ${month}`, `${hours}:${mins}:${secs}`];
-}
-
-function createDiv(detail) {
-    let div = document.createElement('div');
-    div.classList.add('result__container');
-    div.innerHTML = `<div class="result__day">
-    <p>${ myDate((detail.dt * 1000))[0] }</p></div>
-    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
-    <p>${detail.temp.day || detail.main.temp}<sup>o</sup>C</p>
-    <p>${detail.temp.max || detail.main.temp}<sup>o</sup></p>`
-    return div;
-}
-
-function createDiv_search(detail) {
-    let div = document.createElement('div');
-    div.classList.add('result__container');
-    div.innerHTML = `<div class="result__day">
-    <p>${ myDate((detail.dt * 1000))[0] }</p></div>
-    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
-    <p>${detail.main.temp}<sup>o</sup>C</p>
-    <p>${detail.main.feels_like}<sup>o</sup></p>`
-    return div;
-}
-
-form.addEventListener('submit', fetchWeather);
-
+// set video background based on weather condition
 function getVideoWeatherCond(description) {
     let newDescription = description.toLowerCase();
     switch (newDescription) {
@@ -154,6 +109,64 @@ function getVideoWeatherCond(description) {
     }
 }
 
+// return a nicely formatted date 
+function myDate(milliseconds) {
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    let dateObj = new Date(milliseconds);
+    
+    let day = days[dateObj.getDay()];
+    let date = dateObj.getDate();
+    let month = months[dateObj.getMonth()]
+    let hours = dateObj.getHours();
+    let mins = dateObj.getMinutes();
+    let secs = dateObj.getSeconds();
+
+    if (hours < 10) {
+        hours = `0${hours}`;
+    }
+
+    if (mins < 10) {
+        mins = `0${mins}`;
+    }
+
+    if (secs < 10) {
+        secs = `0${secs}`;
+    }
+    
+    return [day, `${date} ${month}`, `${hours}:${mins}:${secs}`];
+}
+
+// I think I created two divs because I got error in the short circuit OR operator
+
+// div for other days result(user)
+function createDiv(detail) {
+    let div = document.createElement('div');
+    div.classList.add('result__container');
+    div.innerHTML = `<div class="result__day">
+    <p>${ myDate((detail.dt * 1000))[0] }</p></div>
+    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
+    <p>${detail.temp.day || detail.main.temp}<sup>o</sup>C</p>
+    <p>${detail.temp.max || detail.main.temp}<sup>o</sup></p>`
+    return div;
+}
+
+// div for other days result(searched result)
+function createDiv_search(detail) {
+    let div = document.createElement('div');
+    div.classList.add('result__container');
+    div.innerHTML = `<div class="result__day">
+    <p>${ myDate((detail.dt * 1000))[0] }</p></div>
+    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
+    <p>${detail.main.temp}<sup>o</sup>C</p>
+    <p>${detail.main.feels_like}<sup>o</sup></p>`
+    return div;
+}
+
+// form.addEventListener('submit', fetchWeather);
+
+
 // const clientFetchUrls = ['https://api.ipgeolocation.io/ipgeo?apiKey=b27ecf90eaf747ada703c9a51478c65e', 'https://ipapi.co/json/'];
 
 async function fetchClientLocation(url) {
@@ -169,16 +182,23 @@ function returnClientInfo(urlRes) {
     }
 }
 
+// get user lon and lat(when the page loads)
+// there can be another error when my limit exceeds 1000.
+// LATER: throw another error when the above happens
 async function getUserLocation_ipgeolocate() {
     try {
         let userRes = await fetchClientLocation('https://api.ipgeolocation.io/ipgeo?apiKey=b27ecf90eaf747ada703c9a51478c65e');
 
         return returnClientInfo(userRes);
     } catch (error) {
-        console.warn(error);
+        if (error instanceof TypeError) {
+            throw new NetworkError('Network Problem');
+        }
+        // another error needed
     }
 }
 
+// get weather of user's location
 async function getUserWeather(lat, lon) {
     try {
         let response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&units=metric&appid=2a63fbe8f73d8e2ae551fffd101e59ee`);
@@ -192,30 +212,39 @@ async function getUserWeather(lat, lon) {
     }
 }
 
+// set user's location weather
 async function setUserWeather() {
-    let {city, longitude, latitude} = await getUserLocation_ipgeolocate();
-    let userResult = await getUserWeather(latitude, longitude);
-    let [current, daily] = [userResult.current, userResult.daily]
-    let currentTime = myDate(current.dt * 1000);
-    todayDiv(current, currentTime, city);
+    try {
+        let {city, longitude, latitude} = await getUserLocation_ipgeolocate();
+        let userResult = await getUserWeather(latitude, longitude);
+        let [current, daily] = [userResult.current, userResult.daily]
+        let currentTime = myDate(current.dt * 1000);
+        todayDiv(current, currentTime, city);
 
-    getVideoWeatherCond(current.weather[0].main)
+        getVideoWeatherCond(current.weather[0].main)
 
-    for (let i = 1; i < daily.length - 1; i++) {
-        let dailyCont = createDiv(daily[i]);
-        resultFollowingDays.append(dailyCont);
+        for (let i = 1; i < daily.length - 1; i++) {
+            let dailyCont = createDiv(daily[i]);
+            resultFollowingDays.append(dailyCont);
+        }
+    } catch (error) {
+        if (error instanceof NetworkError) {
+            notFoundDiv(error.message);
+            console.clear();
+        }
+    } finally {
+        pageLoader.style.opacity = 0;
+        setTimeout(() => {
+            pageLoader.remove();
+        }, 1100);
     }
-    
-    pageLoader.style.opacity = 0;
-    setTimeout(() => {
-        pageLoader.remove();
-    }, 1100);
 }
 
 document.addEventListener('DOMContentLoaded', async event => {
     await setUserWeather();
 })
 
+// get searched location
 async function currentLocationWeather(userInput) {
     try {
         let wetherRes = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${userInput}&units=metric&appid=2a63fbe8f73d8e2ae551fffd101e59ee`);
@@ -227,6 +256,7 @@ async function currentLocationWeather(userInput) {
     }
 }
 
+// load searched result
 async function populateResult(userInput) {
     let loading = createLoader();
     form.append(loading);
@@ -241,7 +271,8 @@ async function populateResult(userInput) {
             setTimeout(() => {
                 loading.remove();
             }, 650);
-            notFoundDiv(currentWeather.message);
+            // notFoundDiv(currentWeather.message);
+            notFoundDiv(`${userInput} not found`);
             return;
         }
 
@@ -251,15 +282,6 @@ async function populateResult(userInput) {
         let locationName = currentWeather.name;
 
         let currentTime = myDate(currentWeather.dt * 1000);
-        
-        // todayDiv(currentWeather, currentTime, locationName);
-
-        // setTimeout(() => {
-        //     todayDiv(currentWeather, currentTime, locationName);
-        //     getVideoWeatherCond(currentWeather.weather[0].main);
-        // }, 700);
-
-        // getVideoWeatherCond(currentWeather.weather[0].main);
         
         let weatherForecast = await getWeatherData(userInput);
 
@@ -299,7 +321,7 @@ async function populateResult(userInput) {
     }
 }
 
-
+// fetch and populate searched result
 async function fetchWeather(event) {
     event.preventDefault();
     
@@ -323,5 +345,7 @@ async function getWeatherData(userInput) {
         console.warn(error);
     }
 }
+
+form.addEventListener('submit', fetchWeather);
 
 // http://openweathermap.org/img/wn/13d@2x.png
