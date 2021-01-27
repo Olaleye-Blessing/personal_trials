@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather || B</title>
+    <link rel="shortcut icon" href="../svg/002-w.svg" type="image/x-icon">
     <link rel="stylesheet" href="css/index.css">
     <!-- <script src="testing.js" defer></script> -->
     <script type="module" src="index.js" defer></script>
 </head>
 <body>
-    <div class="loader__video">
-
+    <div data-loader="page" aria-hidden="true">
+        <div  class="cssload-loader"></div>
     </div>
+    
+    
+    <!-- <div class="loader__video" aria-hidden="true">
+
+    </div> -->
     <figure class="bg__video" aria-hidden="true">
         <video class="bg__video-content" autoplay muted loop>
             <source src="../videos/weather/Beach - 8010.mp4" type="video/mp4">
@@ -26,112 +32,16 @@
             <input type="search" name="search" id="search" class="search" autocomplete="off" aria-label="Search for city, country..." placeholder="Search for city, country...">
             <button class="search-icon"></button>
             <!-- <span data-message="notfound"></span> -->
-            <!-- <div class="cssload-container">
-                <div class="cssload-item cssload-moon"></div>
-            </div> -->
         </form>
         <!-- <div class="cssload-container">
             <div class="cssload-item cssload-moon"></div>
         </div> -->
-        <section class="result">
+        <section class="result" aria-live="assertive" aria-atomic="true">
             <div class="result__today result__container">
-                <!-- <div class="result__today-date">
-                    <span>Monday</span>
-                    <span>6 Oct</span>
-                    <span>03:00:00</span>
-                </div>
-                <section class="result__today-detail">
-                    <h3 data-current="city">New York</h3>
-                    <p data-current="description">Sunny</p>
-                    <div class="result__today-detail-img">
-                        <p data-current="temperature">23<sup>o</sup>C</p>
-                        <figure data-current="img_cont">
-                            <img src="../svg/002-sunny.svg" alt="sun icon">
-                        </figure>
-                    </div>
-                    <div class="result__today-sub-detail">
-                        <div>
-                            <figure>
-                                <img src="../svg/001-umbrella.svg" alt="">
-                            </figure>
-                            <p data-meas="precipitation">20%</p>
-                        </div>
-                        <div>
-                            <figure>
-                                <img src="../svg/002-wind.svg" alt="">
-                            </figure>
-                            <p data-meas="wind">18km/h</p>
-                        </div>
-                        <div>
-                            <figure>
-                                <img src="../svg/003-direction.svg" alt="">
-                            </figure>
-                            <p data-meas="direction">East</p>
-                        </div>
-                    </div>
-                </section> -->
+                
             </div>
             <div class="result__following">
-                <!-- <div class="result__container">
-                    <div class="result__day">
-                        <p>Tuesday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div>
-                <div class="result__container">
-                    <div class="result__day">
-                        <p>Wednesday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div>
-                <div class="result__container">
-                    <div class="result__day">
-                        <p>Thursday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div>
-                <div class="result__container">
-                    <div class="result__day">
-                        <p>Friday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div>
-                <div class="result__container">
-                    <div class="result__day">
-                        <p>Saturday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div>
-                <div class="result__container">
-                    <div class="result__day">
-                        <p>Sunday</p>
-                    </div>
-                    <figure>
-                        <img src="../svg/004-clouds.svg" alt="">
-                    </figure>
-                    <p>23<sup>o</sup>C</p>
-                    <p>18<sup>o</sup></p>
-                </div> -->
+                
             </div>
         </section>
         
