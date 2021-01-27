@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async event => {
 // get searched location
 async function currentLocationWeather(userInput) {
     try {
-        let wetherRes = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${userInput}&units=metric&appid=2a63fbe8f73d8e2ae551fffd101e59ee`);
+        let wetherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${userInput}&units=metric&appid=2a63fbe8f73d8e2ae551fffd101e59ee`);
         return await wetherRes.json();
     } catch (error) {
         if (error instanceof TypeError) {
