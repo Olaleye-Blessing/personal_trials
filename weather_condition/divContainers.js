@@ -42,7 +42,7 @@ export function todayDiv(current, time, city) {
         <div class="result__today-detail-img">
             <p data-current="temperature">${current.temp || current.main.temp}<sup>o</sup>C</p>
             <figure data-current="img_cont">
-                <img src="http://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png" alt="sun icon">
+                <img src="https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png" alt="sun icon">
             </figure>
         </div>
         <div class="result__today-sub-detail">

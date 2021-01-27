@@ -146,7 +146,7 @@ function createDiv(detail) {
     div.classList.add('result__container');
     div.innerHTML = `<div class="result__day">
     <p>${ myDate((detail.dt * 1000))[0] }</p></div>
-    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
+    <figure><img src="https://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
     <p>${detail.temp.day || detail.main.temp}<sup>o</sup>C</p>
     <p>${detail.temp.max || detail.main.temp}<sup>o</sup></p>`
     return div;
@@ -158,7 +158,7 @@ function createDiv_search(detail) {
     div.classList.add('result__container');
     div.innerHTML = `<div class="result__day">
     <p>${ myDate((detail.dt * 1000))[0] }</p></div>
-    <figure><img src="http://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
+    <figure><img src="https://openweathermap.org/img/wn/${detail.weather[0].icon}@2x.png" alt=""></figure>
     <p>${detail.main.temp}<sup>o</sup>C</p>
     <p>${detail.main.feels_like}<sup>o</sup></p>`
     return div;
