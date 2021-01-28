@@ -2,6 +2,7 @@ import { NetworkError } from "../corona_update/error.js";
 
 import { todayResult, resultFollowingDays, todayDiv, searchedTdayDiv} from "./divContainers.js";
 
+
 const pageLoader = document.querySelector('[data-loader="page"]');
 
 // window.addEventListener('load', event => {
@@ -14,11 +15,87 @@ const pageLoader = document.querySelector('[data-loader="page"]');
 
 const videoCont = document.querySelector('.bg__video');
 
+const historyContainer = document.querySelector('.history__lists');
+
+const historyBtn = document.querySelector('.history__btn');
+
+const closeHistoryBtn = document.querySelector('.history__close');
+
+historyBtn.addEventListener('click', event => {
+    historyContainer.classList.add('listshow');
+
+    let buttons = historyContainer.querySelectorAll('button');
+
+    buttons.forEach(button => {
+        button.tabIndex = 0;
+    })
+
+    historyBtn.classList.add('disabled');
+})
+
+closeHistoryBtn.addEventListener('click', event => {
+    historyContainer.classList.remove('listshow');
+
+    let buttons = historyContainer.querySelectorAll('button');
+
+    buttons.forEach(button => {
+        button.tabIndex = -1;
+    })
+
+    historyBtn.classList.remove('disabled');
+})
+
 const form = document.forms[0];
 
 const searchInput = document.getElementById('search');
 
 const resultCont = document.querySelector('.result');
+
+let userHistoryLists = [];
+
+function emptyHistoryContent() {
+    let emptyListPara = document.createElement('p');
+    emptyListPara.textContent = `History is empty`;
+    closeHistoryBtn.after(emptyListPara);
+}
+
+historyContainer.addEventListener('click', event => {
+    let targetClose = event.target.closest(`[data-btnType="delete"]`)
+    if (!targetClose) {
+        return;
+    }
+    let listContent = targetClose.previousElementSibling.textContent;
+
+    userHistoryLists = userHistoryLists.filter(content => content != listContent);
+
+    localStorage.setItem("searched", JSON.stringify(userHistoryLists));
+    // if (userHistoryLists == 0) {
+    //     emptyHistoryContent();
+    // }
+    let parentList = targetClose.parentElement;
+    
+    parentList.classList.add('remove-list');
+    setTimeout(() => {
+        parentList.remove();
+        // if (!closeHistoryBtn.nextElementSibling) {
+        //     emptyHistoryContent();
+        // }
+        // if (userHistoryLists.length == 0) {
+        //     emptyHistoryContent();
+        // }
+    }, 2100);
+    if (userHistoryLists.length == 0) {
+        setTimeout(() => {
+            emptyHistoryContent();
+        }, 2100);
+    }
+})
+
+function createHistoryListCont(input) {
+    let li = document.createElement('li');
+    li.innerHTML = `<button tabindex="-1" data-btnType="location">${input}</button><button aria-label="delete list" tabindex="-1" class="history__delete" data-btnType="delete"></button>`
+    return li;
+}
 
 // create loading indicator when a city/country is searched
 function createLoader() {
@@ -306,6 +383,34 @@ async function populateResult(userInput) {
                 resultCont.classList.remove('notOpaq');
                 videoCont.classList.remove('notOpaq');
             }, 650);
+
+            if (userHistoryLists.length == 0) {
+                closeHistoryBtn.nextElementSibling.remove();
+            }
+
+            if (userHistoryLists.length >= 8) {
+                userHistoryLists.pop();
+                let lastList = historyContainer.lastElementChild;
+                lastList.classList.add('remove-list');
+                setTimeout(() => {
+                    lastList.remove();
+                }, 2000);
+            }
+
+            let searchedFound = userHistoryLists.some(list => list.toLowerCase() == userInput.toLowerCase());
+
+            if (!searchedFound) {
+                // userHistoryLists.push(userInput);
+                userHistoryLists.unshift(userInput);
+
+                let searchList = createHistoryListCont(userInput);
+        
+                closeHistoryBtn.after(searchList);
+        
+                // localStorage.setItem('searched', JSON.stringify(userHistoryLists));    
+            }
+    
+            localStorage.setItem('searched', JSON.stringify(userHistoryLists));
         }, 700);
     } catch (error) {
         if (error instanceof NetworkError) {
@@ -316,10 +421,38 @@ async function populateResult(userInput) {
             setTimeout(() => {
                 loading.remove();
             }, 650);
-            console.clear();
+            // console.clear();
         }
     }
 }
+
+window.addEventListener('load', event => {
+    userHistoryLists = JSON.parse(localStorage.getItem('searched'));
+
+    if (userHistoryLists) {
+        if (userHistoryLists.length == 0) {
+            emptyHistoryContent();
+        } else {
+            userHistoryLists.forEach(list => {
+                closeHistoryBtn.after(createHistoryListCont(list));
+            })
+        }
+    } else {
+            emptyHistoryContent();
+            userHistoryLists = [];    
+    }
+    // if (userHistoryLists) {
+    //     userHistoryLists.forEach(list => {
+    //         closeHistoryBtn.after(createHistoryListCont(list));
+    //     })
+    // } else if(userHistoryLists.length == 0) {
+    //     emptyHistoryContent();
+    //     // userHistoryLists = [];
+    // } else {
+    //     emptyHistoryContent();
+    //     userHistoryLists = [];
+    // }
+})
 
 // fetch and populate searched result
 async function fetchWeather(event) {
