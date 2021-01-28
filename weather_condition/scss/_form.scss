@@ -48,11 +48,14 @@ input[type="search"] {
     padding: 1.8rem 0 0.7rem 0.8rem;
     background-color: transparent;
     color: var(--pure-white);
-}
 
-figure {
+    &:focus {
+        border-right: 0;
+        box-shadow: none;
+    }
 }
 
 ::placeholder {
     color: var(--pure-white);
+    color: var(--search-bg);
 }

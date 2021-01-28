@@ -20,7 +20,14 @@ html {
     box-sizing: inherit;
 }
 
+*:focus {
+    box-shadow: 0rem 0rem 0.4rem 0.3rem var(--light-blue);
+    outline: none;
+    transition: all 0.4s linear;
+}
+
 body {
+    overflow-x: hidden;
     font-size: 1.6rem;
     line-height: 1.5;
     min-height: 100vh;
@@ -39,6 +46,7 @@ main, header {
 }
 
 header {
+    position: relative;
     padding-top: 1.2rem;
     padding-bottom: 1.2rem;
     background-color: var(--pure-black);
@@ -47,6 +55,17 @@ header {
         letter-spacing: -0.1rem;
         font-size: 1rem;
     }
+
+    & > div {
+        display: flex;
+        // flex-flow: row wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+    // display: flex;
+    // flex-flow: row wrap;
+    // align-items: center;
+    // justify-content: space-between;
 }
 
 figure {
@@ -60,4 +79,14 @@ svg, img {
 
 figcaption {
     display: block;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    // color: inherit;
 }
