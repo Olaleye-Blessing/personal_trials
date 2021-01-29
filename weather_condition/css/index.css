@@ -656,6 +656,10 @@ input[type="search"]:focus {
           box-shadow: 0 0 0.5rem 0.09rem var(--light-blue);
 }
 
+.history__btn.disabled {
+  cursor: not-allowed !important;
+}
+
 .history__btn:focus, .history__btn:hover {
   outline: none;
   -webkit-box-shadow: 0 0 0.8rem var(--light-blue);
@@ -684,8 +688,8 @@ input[type="search"]:focus {
   -webkit-transform-origin: top right;
           transform-origin: top right;
   opacity: 0;
-  -webkit-transition: all 2.5s linear;
-  transition: all 2.5s linear;
+  -webkit-transition: all 1s linear;
+  transition: all 1s linear;
 }
 
 .history__lists::-webkit-scrollbar {
