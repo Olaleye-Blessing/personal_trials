@@ -26,8 +26,8 @@
                     </ul>
                 </ul>
                 <form class="nav__search" role="search">
-                    <input type="search" name="" id="search" placeholder="search for movies, tv shows..."/>
-                    <button class="nav__search-icon">
+                    <input type="search" name="" id="search" placeholder="search for movies, tv shows and people" aria-label="search for movies, tv shows and people"/>
+                    <button class="nav__search-icon" aria-label="search button">
                         <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
                 </form>
@@ -124,6 +124,35 @@
 
                 </section>
             </div>
+            <section class="search__result none">
+                <section>
+                    <form class="search" data-form-type="search">
+                        <h3 id="searchFilterHead">Result for: <span></span> </h3>
+                        <button type="button" class="search__filter" id="search__filter">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>filter</span>
+                            <span class="search__filter-number">0</span>
+                        </button>
+                        <div class="search__groups">
+                            <div class="search__group">
+                                <input type="checkbox" name="search" id="movie" value="movie">
+                                <label for="movie">movie</label>
+                            </div>
+                            <div class="search__group">
+                                <input type="checkbox" name="search" id="tvshow" value="tv">
+                                <label for="tvshow">tvshow</label>
+                            </div>
+                            <div class="search__group">
+                                <input type="checkbox" name="search" id="person" value="person">
+                                <label for="person">person</label>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="grid">
+                        
+                    </ul>
+                </section>
+            </section>
             <div class="pagination">
                 <ul>
                     <!-- <li class="btn prev"><span><i class="fas fa-angle-left"></i> Prev</span></li>
@@ -137,6 +166,7 @@
                     <li class="btn next"><span>Next <i class="fas fa-angle-right"></i></span></li> -->
                 </ul>
             </div>
+            
         </main>
     </body>
 </html>
@@ -144,5 +174,135 @@
 <!-- 
     search
     trending
+    <li class="scene">
+                            <div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Wonder Woman 1984's summary" aria-hidden="true"></i><span class="sr-only">Wonder Woman 1984's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>Wonder Woman comes into conflict with the Soviet Union during the Cold War in the 1980s and finds a formidable foe by the name of the Cheetah.
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>2635.962
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Action, Adventure, Fantasy
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Wonder Woman 1984</span>
+                        </div>
+                    </li>
+                    <li class="scene"><div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Outside the Wire's summary" aria-hidden="true"></i><span class="sr-only">Outside the Wire's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/mZ28Iwl3cSUSpfhe6cIkamhH7aT.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>In the near future, a drone pilot is sent into a deadly militarized zone and must work with an android officer to locate a doomsday device.
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>1776.93
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Action, Science Fiction, Thriller
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Outside the Wire</span>
+                        </div>
+                    </li>
+                    <li class="scene"><div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Soul's summary" aria-hidden="true"></i><span class="sr-only">Soul's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/hm58Jw4Lw8OIeECIq5qyPYhAeRJ.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>Joe Gardner is a middle school teacher with a love for jazz music. After a successful gig at the Half Note Club, he suddenly gets into an accident that separates his soul from his body and is transpor.....
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>1333.828
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Animation, Comedy, Drama, Family, Fantasy, Music
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Soul</span>
+                        </div>
+                    </li>
+                    <li class="scene">
+                        <div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Wonder Woman 1984's summary" aria-hidden="true"></i><span class="sr-only">Wonder Woman 1984's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>Wonder Woman comes into conflict with the Soviet Union during the Cold War in the 1980s and finds a formidable foe by the name of the Cheetah.
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>2635.962
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Action, Adventure, Fantasy
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Wonder Woman 1984</span>
+                        </div>
+                    </li>
+                    <li class="scene">
+                        <div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Outside the Wire's summary" aria-hidden="true"></i><span class="sr-only">Outside the Wire's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/mZ28Iwl3cSUSpfhe6cIkamhH7aT.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>In the near future, a drone pilot is sent into a deadly militarized zone and must work with an android officer to locate a doomsday device.
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>1776.93
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Action, Science Fiction, Thriller
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Outside the Wire</span>
+                        </div>
+                    </li>
+                    <li class="scene">
+                        <div class="card">
+                            <div class="card__face card__face--front">
+                                <button data-btn="switch-card"><i class="fas fa-info" title="Soul's summary" aria-hidden="true"></i><span class="sr-only">Soul's summary</span></button>
+                                <figure><img src="https://image.tmdb.org/t/p/original/hm58Jw4Lw8OIeECIq5qyPYhAeRJ.jpg" alt=""></figure>
+                            </div>
+                            <div class="card__face card__face--back">
+                                <div class="card__overview">
+                                    <span>Overview: </span>Joe Gardner is a middle school teacher with a love for jazz music. After a successful gig at the Half Note Club, he suddenly gets into an accident that separates his soul from his body and is transpor.....
+                                </div>
+                                <div class="card__popularity">
+                                    <span>Popularity: </span>1333.828
+                                </div>
+                                <div class="card__genre">
+                                    <span>Genre: </span>Animation, Comedy, Drama, Family, Fantasy, Music
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__link">
+                            <span>Soul</span>
+                        </div>
+                    </li>
 
  -->

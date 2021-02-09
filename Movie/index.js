@@ -2,6 +2,202 @@ import { NetworkError } from "../corona_update/error.js";
 
 const ulTag = document.querySelector(".pagination ul");
 
+const formSearch = document.querySelector(".nav__search");
+
+const searchResultFilter = document.getElementById("search__filter");
+
+const filterGroups = document.querySelector(".search__groups");
+
+filterGroups.querySelectorAll('input').forEach(input => input.addEventListener('change', createFilterArray));
+
+let filterSearchArray = [];
+
+function createFilterArray(event) {
+    let inputTarget = event.target;
+    inputTarget.checked ? filterSearchArray.push(inputTarget.value) : filterSearchArray = filterSearchArray.filter(value => value != inputTarget.value);
+    console.log(filterSearchArray);
+
+    filterResult();
+}
+
+function filterResult() {
+    let allList = searchResultPanel.querySelector('.grid').querySelectorAll('[data-search="list"]');
+
+    if (filterSearchArray.length != 0) {
+        allList.forEach(list => {
+            let mediaType = list.dataset.mediaType;
+            filterSearchArray.indexOf(mediaType) == -1 ? list.hidden = true : list.hidden = false;
+        });
+    } else {
+        allList.forEach(list => {
+            list.hidden = false;
+        });
+    }
+
+    filterNumberCont.innerHTML = filterSearchArray.length;
+}
+
+let filterNumberCont = document.querySelector('.search__filter-number');
+
+// console.log(filterNumberCont);
+
+searchResultFilter.addEventListener("click", (event) => {
+    // let filterGroups = 
+    filterGroups.classList.toggle("visible");
+});
+
+let searchingFormClicked = 0;
+
+const searchResultPanel = document.querySelector(".search__result");
+
+// formSearch.addEventListener("submit", searching);
+
+const formSearchBtn = formSearch.querySelector('.nav__search-icon');
+
+// console.log(formSearchBtn);
+
+
+
+formSearch.addEventListener('click', event => {
+    // console.log(event.type);
+    // console.log('clicked');
+    if (searchingFormClicked == 0) {
+        event.preventDefault();
+        searchingFormClicked = 1;
+        formSearchBtn.previousElementSibling.focus();
+        // return false;
+    }else if (searchingFormClicked == 1) {
+        formRemovePanels();
+    }
+})
+
+formSearch.addEventListener('submit', async event => {
+    event.preventDefault();
+    searchedWord = formSearch.querySelector("#search").value.trim();
+
+    if (searchedWord == "") return;
+    
+    let filterHeading = searchResultPanel.querySelector(
+        "#searchFilterHead span"
+    );
+    filterHeading.innerHTML = searchedWord;
+    filterHeading.title = searchedWord;
+
+    filterGroups.querySelectorAll('input').forEach(input => input.checked = false);
+    filterSearchArray = [];
+    filterNumberCont.innerHTML = 0;
+
+    await searchingMedia(1);
+    // totalSearchPage = results.total_pages;
+
+    createpag(totalSearchPage, 1);
+
+    ulTag.removeEventListener("click", loadingHomePages);
+    ulTag.removeEventListener("click", tvShowLoadingPages);
+    ulTag.removeEventListener("click", moviesLoadingPages);
+
+    ulTag.addEventListener("click", loadingSearchPages);
+    
+    formSearchBtn.previousElementSibling.value = "";
+})
+
+
+
+// function getSearchedWord() {
+//     let searchedWord = formSearch.querySelector("#search").value.trim();
+//     return searchedWord;
+//     // if (searchedWord == "") {
+//     //     return;
+//     // }
+// }
+
+let searchedWord = "";
+
+function formRemovePanels() {
+    for (let panelLink of mainNav.querySelectorAll('a[href=""]')) {
+        panelLink.classList.remove("active");
+        panelLink.parentElement.setAttribute("aria-selected", false);
+    }
+
+    for (let panel of allPanels) {
+        panel.classList.remove("active-panel");
+        panel.setAttribute("aria-hidden", true);
+    }
+
+    searchResultPanel.classList.remove("none");
+}
+
+async function searchingMedia(page) {
+    let results = await filterPopularity(
+        `https://api.themoviedb.org/3/search/multi?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&query=${searchedWord}&include_adult=true`,
+        page
+    );
+    if (!results) {
+        return;
+    }
+    totalSearchPage = results.total_pages;
+
+    let grid = searchResultPanel.querySelector(".grid");
+    grid.innerHTML = "";
+    if (results.results.length == 0) {
+        grid.innerHTML = 'No result';
+        return;
+    }
+    for (let result of results.results) {
+        let li;
+        if (result.media_type == "tv" || result.media_type == "movie") {
+            li = otherContainers(result);
+            // grid.append(li);    
+        } 
+        else if (result.media_type == "person") {
+            li = homeCreateVidTrendingPerson(result);
+            li.classList.add('search__person');
+            // grid.append(li);
+        }
+        li.setAttribute('data-media-type', result.media_type);
+        li.setAttribute('data-search', 'list');
+        grid.append(li);
+
+        // console.log(result.media_type);
+    }
+
+    filterResult();
+}
+
+function searchingLoadPages(to) {
+    
+}
+
+async function loadingSearchPages(event) {
+    let targetBtn = event.target.closest("[data-type|=btn]");
+    if (!targetBtn) {
+        return;
+    }
+    let specificBtn = targetBtn.dataset.type;
+
+    let currentNumb = +ulTag.querySelector(".active span").textContent;
+
+    switch (specificBtn) {
+        case "btn-Prev":
+            createpag(totalSearchPage, currentNumb - 1);
+            searchingMedia(currentNumb - 1);
+            break;
+
+        case "btn-page":
+            let specificNum = +targetBtn.firstElementChild.textContent;
+            if (specificNum != currentNumb) {
+                createpag(totalSearchPage, specificNum);
+            }
+            searchingMedia(specificNum);
+            break;
+
+        case "btn-Next":
+            createpag(totalSearchPage, currentNumb + 1);
+            searchingMedia(currentNumb + 1);
+            break;
+    }
+}
+
 // let totalPages = 400;
 
 let totalHomePage = 1;
@@ -10,37 +206,41 @@ let totalMoviePage = 1;
 
 let totalTvShowPage = 1;
 
-let totalGenrePage = 1;
+let totalSearchPage = 1;
 
-const filterMovieForm = document.querySelector('[data-panel="movie"] select#movieFilter');
+const filterMovieForm = document.querySelector(
+    '[data-panel="movie"] select#movieFilter'
+);
 
-const filterTvShowForm = document.querySelector('[data-panel="tvShow"] select#tvShowFilter');
+const filterTvShowForm = document.querySelector(
+    '[data-panel="tvShow"] select#tvShowFilter'
+);
 
 // console.log(filterTvShowForm);
 
-filterMovieForm.addEventListener('input', async event => {
+filterMovieForm.addEventListener("input", async (event) => {
     await fetchMovie(filterMovieForm.value, 1);
     createpag(totalMoviePage, 1);
-})
+});
 
-filterTvShowForm.addEventListener('input', async event => {
+filterTvShowForm.addEventListener("input", async (event) => {
     await fetchtvShow(filterTvShowForm.value, 1);
     createpag(totalTvShowPage, 1);
-    console.log("yes");
-})
+    // console.log("yes");
+});
 
 function loadingHomePages(event) {
-    let targetBtn = event.target.closest('[data-type|=btn]')
+    let targetBtn = event.target.closest("[data-type|=btn]");
     if (!targetBtn) {
         return;
     }
     let specificBtn = targetBtn.dataset.type;
 
-    let currentNumb = +ulTag.querySelector('.active span').textContent;
+    let currentNumb = +ulTag.querySelector(".active span").textContent;
 
     // console.log(totalHomePage)
     switch (specificBtn) {
-        case 'btn-Prev':
+        case "btn-Prev":
             // createpag(totalPages, currentNumb - 1);
             createpag(totalHomePage, currentNumb - 1);
             popularMoviePagePopulate(currentNumb - 1);
@@ -49,7 +249,7 @@ function loadingHomePages(event) {
             trendingPersonPagePopulate(currentNumb - 1);
             break;
 
-        case 'btn-page':
+        case "btn-page":
             let specificNum = +targetBtn.firstElementChild.textContent;
             if (specificNum != currentNumb) {
                 // createpag(totalPages, specificNum);
@@ -61,7 +261,7 @@ function loadingHomePages(event) {
             }
             break;
 
-        case 'btn-Next':
+        case "btn-Next":
             // createpag(totalPages, currentNumb + 1);
             createpag(totalHomePage, currentNumb + 1);
             popularMoviePagePopulate(currentNumb + 1);
@@ -72,65 +272,80 @@ function loadingHomePages(event) {
     }
 }
 
-ulTag.addEventListener('click', loadingHomePages);
+ulTag.addEventListener("click", loadingHomePages);
 
 function createpag(totalPages, page) {
     let liTag = ``;
-    let beforePages = page - 1;
-    let afterPages = page + 1;
-    let active = "";
-    if (page > 1) { // show the previous button
-        liTag += `<li class="btn prev" data-type="btn-Prev"><span><i class="fas fa-angle-left"></i> Prev</span></li>`;
-    }
-
-    if (page > 2) { // show value 1
-        liTag += `<li data-type="btn-page" class="numb"><span>1</span></li>`;
-        if (page > 3) { // show ...
-            liTag += `<li class="dot"><span>...</span></li>`
+    if (totalPages <= 5) {
+        let active = "";
+        for (let i = 1; i <= totalPages; i++) {
+            active = i == page ? "active" : "";
+            liTag += `<li data-type="btn-page" class="numb ${active}"><span>${i}</span></li>`;
         }
-    }
-
-    if (page == 1) {
-        afterPages += 2;
-    } else if (page == 2) {
-        afterPages += 1;
-    }
-
-    if (page == totalPages) {
-        beforePages -= 2;
-    } else if (page == totalPages - 1) {
-        beforePages -= 1;
-    }
-
-    for (let pages = beforePages; pages <= afterPages; pages++) {
-        if (pages > totalPages) {
-            continue;
-        }
-        if (pages == 0) {
-            pages += 1;
-        }
-        // if (pages == 0) {
-        //     continue;
-        // }
-        if (pages == page) {
-            active = "active";
-        } else {
-            active = "";
-        }
-        liTag += `<li data-type="btn-page" class="numb ${active}"><span>${pages}</span></li>`
-    }
-
-    if (page < totalPages - 1) {
-        // show ...
-        if (page < totalPages - 2) {
-            liTag += `<li class="dot"><span>...</span></li>`;
+        // ulTag.innerHTML = liTag;
+        //     return;
+    } else {
+        // let liTag = ``;
+        let beforePages = page - 1;
+        let afterPages = page + 1;
+        let active = "";
+        if (page > 1) {
+            // show the previous button
+            liTag += `<li class="btn prev" data-type="btn-Prev"><span><i class="fas fa-angle-left"></i> Prev</span></li>`;
         }
 
-        liTag += `<li data-type="btn-page" class="numb"><span>${totalPages}</span></li>`;
-    }
+        if (page > 2) {
+            // show value 1
+            liTag += `<li data-type="btn-page" class="numb"><span>1</span></li>`;
+            if (page > 3) {
+                // show ...
+                liTag += `<li class="dot"><span>...</span></li>`;
+            }
+        }
 
-    if (page < totalPages) { // show next button
-        liTag += `<li class="btn next" data-type="btn-Next"><span>Next <i class="fas fa-angle-right"></i></span></li>`;
+        if (page == 1) {
+            afterPages += 2;
+        } else if (page == 2) {
+            afterPages += 1;
+        }
+
+        if (page == totalPages) {
+            beforePages -= 2;
+        } else if (page == totalPages - 1) {
+            beforePages -= 1;
+        }
+
+        for (let pages = beforePages; pages <= afterPages; pages++) {
+            if (pages > totalPages) {
+                continue;
+            }
+            // if (pages == 0) {
+            //     pages += 1;
+            // }
+            if (pages == 0) {
+                continue;
+            }
+            if (pages == page) {
+                active = "active";
+            } else {
+                active = "";
+            }
+            liTag += `<li data-type="btn-page" class="numb ${active}"><span>${pages}</span></li>`;
+        }
+
+        if (page < totalPages - 1) {
+            // show ...
+            if (page < totalPages - 2) {
+                liTag += `<li class="dot"><span>...</span></li>`;
+            }
+
+            liTag += `<li data-type="btn-page" class="numb"><span>${totalPages}</span></li>`;
+        }
+
+        if (page < totalPages) {
+            // show next button
+            liTag += `<li class="btn next" data-type="btn-Next"><span>Next <i class="fas fa-angle-right"></i></span></li>`;
+        }
     }
 
     ulTag.innerHTML = liTag;
@@ -142,7 +357,7 @@ const closeToggle = document.querySelector('[data-nav="close"]');
 
 const mainNav = document.querySelector(".nav__main");
 
-const allPanels = document.querySelectorAll('.panel');
+const allPanels = document.querySelectorAll(".panel");
 
 // console.log(allPanels);
 
@@ -152,55 +367,72 @@ mainNav.addEventListener("click", async (event) => {
     if (!targetPanelLink) {
         return;
     }
+
+    searchingFormClicked = 0;
+
     if (targetPanelLink.classList.contains("active")) {
         return;
     }
 
-    let parent = targetPanelLink.closest('li');
-    let parentPosition = Number(parent.getAttribute('aria-posinset')) - 1;
+    if (mainNav.classList.contains("show")) {
+        mainNav.classList.remove("show");
+        openToggle.classList.remove("hide");
+        setTimeout(() => {
+            openToggle.style.display = "";
+        }, 400);
+    }
+
+    searchResultPanel.classList.add("none");
+
+    let parent = targetPanelLink.closest("li");
+    let parentPosition = Number(parent.getAttribute("aria-posinset")) - 1;
 
     for (let panelLink of mainNav.querySelectorAll('a[href=""]')) {
         panelLink.classList.remove("active");
-        panelLink.parentElement.setAttribute('aria-selected', false);
+        panelLink.parentElement.setAttribute("aria-selected", false);
     }
 
     targetPanelLink.classList.add("active");
-    parent.setAttribute('aria-selected', true);
+    parent.setAttribute("aria-selected", true);
 
     for (let panel of allPanels) {
-        panel.classList.remove('active-panel');
-        panel.setAttribute('aria-hidden', true);
+        panel.classList.remove("active-panel");
+        panel.setAttribute("aria-hidden", true);
     }
 
     allPanels[parentPosition].setAttribute("aria-hidden", false);
 
-    allPanels[parentPosition].classList.add('active-panel');
-    console.log(targetPanelLink.innerHTML);
+    allPanels[parentPosition].classList.add("active-panel");
+    // console.log(targetPanelLink.innerHTML);
 
     switch (targetPanelLink.innerHTML) {
         case "movies":
             filterMovieForm.options[0].selected = true;
-            await fetchMovie('popular', 1);
+            await fetchMovie("popular", 1);
             createpag(totalMoviePage, 1);
 
-            ulTag.removeEventListener('click', loadingHomePages);
-            ulTag.removeEventListener('click', tvShowLoadingPages);
-            ulTag.addEventListener('click', moviesLoadingPages);
+            ulTag.removeEventListener("click", loadingHomePages);
+            ulTag.removeEventListener("click", tvShowLoadingPages);
+            ulTag.removeEventListener("click", loadingSearchPages);
+
+            ulTag.addEventListener("click", moviesLoadingPages);
             break;
 
-        case 'tv shows':
+        case "tv shows":
             filterTvShowForm.options[0].selected = true;
-            await fetchtvShow('popular', 1);
+            await fetchtvShow("popular", 1);
             createpag(totalTvShowPage, 1);
-            console.log('found');
+            // console.log('found');
 
-            ulTag.removeEventListener('click', loadingHomePages);
-            ulTag.removeEventListener('click', moviesLoadingPages);
-            ulTag.addEventListener('click', tvShowLoadingPages);
+            ulTag.removeEventListener("click", loadingHomePages);
+            ulTag.removeEventListener("click", moviesLoadingPages);
+            ulTag.removeEventListener("click", loadingSearchPages);
+
+            ulTag.addEventListener("click", tvShowLoadingPages);
             // tvShowLoadingPages
             break;
 
-        case 'home':
+        case "home":
             await popularMoviePagePopulate(1);
             trendingMoviePagePopulate(1);
             trendingTvShowsPagePopulate(1);
@@ -209,13 +441,13 @@ mainNav.addEventListener("click", async (event) => {
             // console.log('Done');
             createpag(totalHomePage, 1);
 
-            ulTag.addEventListener('click', loadingHomePages);
-            ulTag.removeEventListener('click', moviesLoadingPages);
-            ulTag.removeEventListener('click', tvShowLoadingPages);
+            ulTag.addEventListener("click", loadingHomePages);
+
+            ulTag.removeEventListener("click", loadingSearchPages);
+            ulTag.removeEventListener("click", moviesLoadingPages);
+            ulTag.removeEventListener("click", tvShowLoadingPages);
 
             break;
-
-        
 
         // case 'movie':
 
@@ -234,33 +466,33 @@ async function fetchtvShow(value, page) {
     }
 
     totalTvShowPage = results.total_pages;
-    
-    let grid = tvShowPanel.querySelector('.grid');
-    
+
+    let grid = tvShowPanel.querySelector(".grid");
+
     grid.innerHTML = ``;
-    const formHead = document.getElementById('tvShowFilterHead');
+    const formHead = document.getElementById("tvShowFilterHead");
 
     let headContent;
     switch (value) {
-        case 'popular':
-            headContent = 'POPULAR TVSHOW';
+        case "popular":
+            headContent = "POPULAR TVSHOW";
             break;
 
-        case 'top_rated':
-            headContent = 'TOP RATED TVSHOW';
+        case "top_rated":
+            headContent = "TOP RATED TVSHOW";
             break;
 
-        case 'airing_today':
-            headContent = 'AIRING TODAY TVSHOW';
+        case "airing_today":
+            headContent = "AIRING TODAY TVSHOW";
             break;
 
-        case 'on_the_air':
-            headContent = 'ON THE AIR TVSHOW'
+        case "on_the_air":
+            headContent = "ON THE AIR TVSHOW";
             break;
     }
     formHead.innerHTML = headContent;
 
-    console.log(results);
+    // console.log(results);
     for (let result of results.results) {
         let li = otherContainers(result);
         grid.append(li);
@@ -278,15 +510,15 @@ async function fetchMovie(value, page) {
         return;
     }
     totalMoviePage = results.total_pages;
-    let grid = moviePanel.querySelector('.grid');
+    let grid = moviePanel.querySelector(".grid");
     grid.innerHTML = ``;
-    const formHead = document.getElementById('movieFilterHead');
-    if (value == 'popular') {
-        formHead.innerHTML = 'POPULAR MOVIES';
-    } else if (value == 'top_rated') {
-        formHead.innerHTML = 'TOP RATED MOVIES';
+    const formHead = document.getElementById("movieFilterHead");
+    if (value == "popular") {
+        formHead.innerHTML = "POPULAR MOVIES";
+    } else if (value == "top_rated") {
+        formHead.innerHTML = "TOP RATED MOVIES";
     }
-    console.log(results);
+    // console.log(results);
     for (let result of results.results) {
         let li = otherContainers(result);
         grid.append(li);
@@ -295,30 +527,30 @@ async function fetchMovie(value, page) {
 }
 
 async function moviesLoadingPages(event) {
-    let targetBtn = event.target.closest('[data-type|=btn]')
+    let targetBtn = event.target.closest("[data-type|=btn]");
     if (!targetBtn) {
         return;
     }
     let specificBtn = targetBtn.dataset.type;
 
-    let currentNumb = +ulTag.querySelector('.active span').textContent;
+    let currentNumb = +ulTag.querySelector(".active span").textContent;
 
     switch (specificBtn) {
-        case 'btn-Prev':
-            console.log('btn-prev');
+        case "btn-Prev":
+            // console.log('btn-prev');
             createpag(totalMoviePage, currentNumb - 1);
             fetchMovie(filterMovieForm.value, currentNumb - 1);
             break;
-        
-            case 'btn-page':
-                let specificNum = +targetBtn.firstElementChild.textContent;
-                if (specificNum != currentNumb) {
-                    createpag(totalMoviePage, specificNum);
-                }
-                fetchMovie(filterMovieForm.value, specificNum);
-                break;
 
-        case 'btn-Next':
+        case "btn-page":
+            let specificNum = +targetBtn.firstElementChild.textContent;
+            if (specificNum != currentNumb) {
+                createpag(totalMoviePage, specificNum);
+            }
+            fetchMovie(filterMovieForm.value, specificNum);
+            break;
+
+        case "btn-Next":
             createpag(totalMoviePage, currentNumb + 1);
             fetchMovie(filterMovieForm.value, currentNumb + 1);
             break;
@@ -326,33 +558,33 @@ async function moviesLoadingPages(event) {
 }
 
 async function tvShowLoadingPages(event) {
-    let targetBtn = event.target.closest('[data-type|=btn]')
+    let targetBtn = event.target.closest("[data-type|=btn]");
     if (!targetBtn) {
         return;
     }
     let specificBtn = targetBtn.dataset.type;
 
-    let currentNumb = +ulTag.querySelector('.active span').textContent;
+    let currentNumb = +ulTag.querySelector(".active span").textContent;
 
     switch (specificBtn) {
-        case 'btn-Prev':
-            console.log('btn-prev');
+        case "btn-Prev":
+            // console.log('btn-prev');
             // createpag(totalMoviePage, currentNumb - 1);
             createpag(totalTvShowPage, currentNumb - 1);
             // fetchMovie(filterMovieForm.value, currentNumb - 1);
             fetchtvShow(filterTvShowForm.value, currentNumb - 1);
             break;
-        
-            case 'btn-page':
-                let specificNum = +targetBtn.firstElementChild.textContent;
-                if (specificNum != currentNumb) {
-                    createpag(totalTvShowPage, specificNum);
-                }
-                // fetchMovie(filterMovieForm.value, specificNum);
-                fetchtvShow(filterTvShowForm.value, specificNum);
-                break;
 
-        case 'btn-Next':
+        case "btn-page":
+            let specificNum = +targetBtn.firstElementChild.textContent;
+            if (specificNum != currentNumb) {
+                createpag(totalTvShowPage, specificNum);
+            }
+            // fetchMovie(filterMovieForm.value, specificNum);
+            fetchtvShow(filterTvShowForm.value, specificNum);
+            break;
+
+        case "btn-Next":
             // createpag(totalMoviePage, currentNumb + 1);
             createpag(totalTvShowPage, currentNumb + 1);
             // fetchMovie(filterMovieForm.value, currentNumb + 1);
@@ -360,7 +592,6 @@ async function tvShowLoadingPages(event) {
             break;
     }
 }
-
 
 function otherContainers(result) {
     let resultGenre = [];
@@ -380,12 +611,18 @@ function otherContainers(result) {
     li.classList.add("scene");
     li.innerHTML = `<div class="card">
         <div class="card__face card__face--front">
-            <button data-btn="switch-card"><i class="fas fa-info" title="${result.original_title}'s summary"></i></button></button>
+            <button data-btn="switch-card"><i class="fas fa-info" title="${
+                result.original_title
+            }'s summary"></i></button></button>
             <figure><img src="${imgSrc}" alt=""></figure>
         </div>
         <div class="card__face card__face--back">
             <div class="card__overview">
-                <span>Overview: </span>${result.overview.length < 200 ? result.overview : result.overview.slice(1, 200) + "....."}
+                <span>Overview: </span>${
+                    result.overview.length < 200
+                        ? result.overview
+                        : result.overview.slice(0, 200) + "....."
+                }
             </div>
             <div class="card__popularity">
                 <span>Popularity: </span>${result.popularity}
@@ -396,7 +633,7 @@ function otherContainers(result) {
         </div>
     </div>
     <div class="card__link">
-        <a href="">${result.original_title || result.original_name}</a>
+        <span>${result.original_title || result.original_name}</span>
     </div>`;
     return li;
 }
@@ -475,11 +712,15 @@ function switchCard(event, parentPanel) {
     target.parentElement.closest(".card").classList.toggle("flipped");
 }
 
-for (let panel of document.querySelectorAll(".panel")) {
-    panel.addEventListener("click", (event) => {
-        switchCard(event, panel);
-    });
-}
+// for (let panel of document.querySelectorAll(".panel")) {
+//     panel.addEventListener("click", (event) => {
+//         switchCard(event, panel);
+//     });
+// }
+
+main.addEventListener('click', event => {
+    switchCard(event, main);
+})
 
 function homeCreateVid(result) {
     let resultGenre = [];
@@ -507,7 +748,7 @@ function homeCreateVid(result) {
             <div class="vid__overview"><span>Overview: </span>${
                 result.overview.length < 321
                     ? result.overview
-                    : result.overview.slice(1, 320) + "....."
+                    : result.overview.slice(0, 320) + "....."
             }</div>
             <div class="vid__popularity"><span>Popularity: </span>${
                 result.popularity
@@ -519,7 +760,7 @@ function homeCreateVid(result) {
         </div>
     </div>
     <div class="vid__link">
-    <a href="">${result.original_title || result.original_name}</a>
+    <span>${result.original_title || result.original_name}</span>
     </div>`;
     return div;
 }
@@ -533,12 +774,12 @@ async function fetchPopularity(url, page) {
         if (popRes.ok) {
             return await popRes.json();
         } else {
-            throw new NetworkError("Network error!")
+            throw new NetworkError("Network error!");
         }
     } catch (error) {
         console.error(error);
         if (error instanceof TypeError || error instanceof NetworkError) {
-            throw new NetworkError("Network error!")
+            throw new NetworkError("Network error!");
         }
     }
 }
@@ -564,12 +805,13 @@ function homeCreateVidTrendingPerson(result) {
         imgSrc = `https://image.tmdb.org/t/p/original${result.profile_path}`;
     }
 
-    let knownFor = ['No information available'];
+    let knownFor = ["No information available"];
 
-    if (!(Object.keys(result.known_for).length === 0 && result.known_for.constructor === Object)) {
+    if ( !(Object.keys(result.known_for).length === 0 && result.known_for.constructor === Object ) ) {
+        knownFor = [];
         for (let movie of result.known_for) {
             knownFor.push(movie.original_title);
-        }   
+        }
     }
     knownFor = knownFor.join(", ");
 
@@ -578,18 +820,24 @@ function homeCreateVidTrendingPerson(result) {
     div.innerHTML = `
     <div class="card">
         <div class="vid__img-cont card-front card-face">
-        <button title="${result.name}'s detail" class="vid__detail-btn" data-btn="switch-card"><i class="fas fa-info"></i></button>
+        <button title="${
+            result.name
+        }'s detail" class="vid__detail-btn" data-btn="switch-card"><i class="fas fa-info"></i></button>
             <figure><img src="${imgSrc}" alt="${result.name}'s image"></figure>
         </div>
         <div class="vid__detail card-back card-face">
-            <div class="vid__overview"><span>Known for: </span>${result.known_for_department || 'no information available'}</div>
-            <div class="vid__popularity"><span>Popularity: </span>${result.popularity || 'no information available'}
+            <div class="vid__overview"><span>Known for: </span>${
+                result.known_for_department || "no information available"
+            }</div>
+            <div class="vid__popularity"><span>Popularity: </span>${
+                result.popularity || "no information available"
+            }
             </div>
             <div class="vid__genre"><span>Movies Involved: </span>${knownFor}</div>
         </div>
     </div>
     <div class="vid__link">
-    <a href="">${result.name}</a>
+    <span>${result.name}</span>
     </div>`;
     return div;
 }
@@ -602,7 +850,7 @@ async function trendingPersonPagePopulate(page) {
     if (!results) {
         return;
     }
-    
+
     trendingpersonPanel.innerHTML = ``;
     for (let result of results.results) {
         let vid = homeCreateVidTrendingPerson(result);
@@ -652,7 +900,7 @@ async function popularMoviePagePopulate(page) {
     }
     totalHomePage = results.total_pages;
     // console.log(totalHomePage);
-    
+
     popularMoviesPanel.innerHTML = ``;
     for (let result of results.results) {
         let vid = homeCreateVid(result);
@@ -667,7 +915,7 @@ window.addEventListener("load", async (event) => {
     trendingTvShowsPagePopulate(1);
     trendingPersonPagePopulate(1);
     createpag(totalHomePage, 1);
-    console.log(totalHomePage);
+    // console.log(totalHomePage);
 });
 
 openToggle.addEventListener("click", (event) => {
