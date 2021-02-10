@@ -421,6 +421,10 @@ formSearch.addEventListener('submit', async event => {
     searchedWord = formSearch.querySelector("#search").value.trim();
 
     if (searchedWord == "") return;
+
+    if (mainNav.classList.contains("show")) {
+        removeToggle();
+    }
     
     let filterHeading = searchResultPanel.querySelector(
         "#searchFilterHead span"
