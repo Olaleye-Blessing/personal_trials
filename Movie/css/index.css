@@ -922,6 +922,62 @@ main {
   margin-right: 1.5rem;
 }
 
+.cssload-ball {
+  background-color: blueviolet;
+  position: absolute;
+  height: 78px;
+  width: 78px;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  border: 3px solid black;
+  border: 3px solid red;
+  left: 50%;
+  transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  animation: cssload-ball 3.45s linear infinite;
+  -o-animation: cssload-ball 3.45s linear infinite;
+  -ms-animation: cssload-ball 3.45s linear infinite;
+  -webkit-animation: cssload-ball 3.45s linear infinite;
+  -moz-animation: cssload-ball 3.45s linear infinite;
+}
+
+.cssload-ball:after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 19px;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background-color: black;
+  background-color: blue;
+  background-color: #fff;
+}
+
+@keyframes cssload-ball {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes cssload-ball {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
 .width {
   width: 100%;
   max-width: 110rem;

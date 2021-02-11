@@ -8,11 +8,11 @@ const searchResultFilter = document.getElementById("search__filter");
 
 const filterGroups = document.querySelector(".search__groups");
 
-let filterNumberCont = document.querySelector('.search__filter-number');
+let filterNumberCont = document.querySelector(".search__filter-number");
 
 const searchResultPanel = document.querySelector(".search__result");
 
-const formSearchBtn = formSearch.querySelector('.nav__search-icon');
+const formSearchBtn = formSearch.querySelector(".nav__search-icon");
 
 const openToggle = document.querySelector('[data-nav="open"]');
 
@@ -21,7 +21,6 @@ const closeToggle = document.querySelector('[data-nav="close"]');
 const mainNav = document.querySelector(".nav__main");
 
 const allPanels = document.querySelectorAll(".panel");
-
 
 const main = document.querySelector("main");
 
@@ -95,28 +94,34 @@ closeToggle.addEventListener("click", (event) => {
 
 class MyError extends Error {
     constructor(message) {
-      super(message);
-      this.name = this.constructor.name;
+        super(message);
+        this.name = this.constructor.name;
     }
+}
+
+function spinner() {
+    let div = document.createElement('div');
+    div.classList.add('cssload-ball');
+    return div;
 }
 
 class NetworkError extends MyError {}
 
 class CreatErroMessage {
     constructor(message) {
-        this.div = document.createElement('div');
-        this.message = message
+        this.div = document.createElement("div");
+        this.message = message;
     }
 
     returnErrorCont = () => {
-        this.div.classList.add('error');
+        this.div.classList.add("error");
         this.div.innerHTML = this.message;
         return this.div;
-    }
+    };
 
     static removeError(div) {
         setTimeout(() => {
-            div.classList.add('fade_out');
+            div.classList.add("fade_out");
             setTimeout(() => {
                 div.remove();
             }, 550);
@@ -124,155 +129,7 @@ class CreatErroMessage {
     }
 }
 
-function loadGenre() {
-    fetch("https://api.themoviedb.org/3/genre/movie/list?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US")
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
-            } else {
-                throw new NetworkError(
-                    "Network error! Please reload your page!"
-                );
-            }
-        })
-        .then((genres) => {
-            allGenre = genres.genres;
-            return allGenre;
-        })
-        .catch((e) => {
-            if (e instanceof NetworkError || e instanceof TypeError) {
-                let errorMessage = new CreatErroMessage("Network error! Please reload your page!").returnErrorCont();
-                main.prepend(errorMessage);
-                CreatErroMessage.removeError(errorMessage);
-            }
-        });
-}
-
-async function fetchUrl(url, page) {
-    let baseUrl = new URL(url);
-    baseUrl.searchParams.set("page", page);
-    try {
-        // console.log(baseUrl);
-        let popRes = await fetch(baseUrl);
-        console.log(popRes);
-        if (popRes.ok) {
-            return await popRes.json();
-        } else {
-            throw new NetworkError("Network error!");
-        }
-    } catch (error) {
-        // console.error(error);
-        if (error instanceof TypeError || error instanceof NetworkError) {
-            throw new NetworkError("Network error!");
-        }
-    }
-}
-
-// async function filterPopularity(url, page) {
-//     try {
-//         let result = await fetchUrl(url, page);
-//         // result = result.results;
-//         return result;
-//     } catch (error) {
-//         if (error instanceof NetworkError) {
-//             let errorMessage = new CreatErroMessage("Network error! Please reload your page!").returnErrorCont();
-//             main.prepend(errorMessage);
-//             CreatErroMessage.removeError(errorMessage);
-//             console.warn(error);
-//         }
-//     }
-// }
-
-async function popularMoviePagePopulate(page) {
-    // let results = await filterPopularity(
-    //     "https://api.themoviedb.org/3/discover/movie?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&sort_by=popularity.desc&include_adult=true&include_video=true",
-    //     page
-    // ); // fetchUrl
-
-    let results = await fetchUrl(
-        "https://api.themoviedb.org/3/discover/movie?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&sort_by=popularity.desc&include_adult=true&include_video=true",
-        page
-    );
-
-    if (!results) {
-        return;
-    }
-    totalHomePage = results.total_pages;
-
-    popularMoviesPanel.innerHTML = ``;
-
-    for (let result of results.results) {
-        let vid = homeCreateVid(result);
-        popularMoviesPanel.append(vid);
-    }
-}
-
-async function trendingMoviePagePopulate(page) {
-    // let results = await filterPopularity(
-    //     "https://api.themoviedb.org/3/trending/movie/day?api_key=651ef57b1ca582995fef27ff08df6717",
-    //     page
-    // );
-
-    console.log('start');
-    let results = await fetchUrl(
-        "https://api.themoviedb.org/3/trending/movie/day?api_key=651ef57b1ca582995fef27ff08df6717",
-        page
-    );
-
-    if (!results) {
-        return;
-    }
-
-    trendingMoviesPanel.innerHTML = ``;
-    for (let result of results.results) {
-        let vid = homeCreateVid(result);
-        trendingMoviesPanel.append(vid);
-    }
-}
-
-async function trendingTvShowsPagePopulate(page) {
-    // let results = await filterPopularity(
-    //     "https://api.themoviedb.org/3/trending/tv/day?api_key=651ef57b1ca582995fef27ff08df6717",
-    //     page
-    // );
-
-    let results = await fetchUrl(
-        "https://api.themoviedb.org/3/trending/tv/day?api_key=651ef57b1ca582995fef27ff08df6717",
-        page
-    );
-
-    if (!results) {
-        return;
-    }
-    trendingTvShowsPanel.innerHTML = ``;
-    for (let result of results.results) {
-        let vid = homeCreateVid(result);
-        trendingTvShowsPanel.append(vid);
-    }
-}
-
-async function trendingPersonPagePopulate(page) {
-    // let results = await filterPopularity(
-    //     " https://api.themoviedb.org/3/trending/person/day?api_key=651ef57b1ca582995fef27ff08df6717",
-    //     page
-    // );
-
-    let results = await fetchUrl(
-        " https://api.themoviedb.org/3/trending/person/day?api_key=651ef57b1ca582995fef27ff08df6717",
-        page
-    );
-
-    if (!results) {
-        return;
-    }
-
-    trendingpersonPanel.innerHTML = ``;
-    for (let result of results.results) {
-        let vid = homeCreateVidTrendingPerson(result);
-        trendingpersonPanel.append(vid);
-    }
-}
-
+// pagination
 function createpag(totalPages, page) {
     let liTag = ``;
     if (totalPages <= 5) {
@@ -281,10 +138,7 @@ function createpag(totalPages, page) {
             active = i == page ? "active" : "";
             liTag += `<li data-type="btn-page" class="numb ${active}"><span>${i}</span></li>`;
         }
-        // ulTag.innerHTML = liTag;
-        //     return;
     } else {
-        // let liTag = ``;
         let beforePages = page - 1;
         let afterPages = page + 1;
         let active = "";
@@ -350,6 +204,173 @@ function createpag(totalPages, page) {
     ulTag.innerHTML = liTag;
 }
 
+// load all genres in tmdb api
+function loadGenre() {
+    fetch(
+        "https://api.themoviedb.org/3/genre/movie/list?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US"
+    )
+        .then((res) => {
+            if (res.ok) {
+                return res.json();
+            } else {
+                throw new NetworkError(
+                    "Network error! Please reload your page!"
+                );
+            }
+        })
+        .then((genres) => {
+            allGenre = genres.genres;
+            return allGenre;
+        })
+        .catch((e) => {
+            if (e instanceof NetworkError || e instanceof TypeError) {
+                let errorMessage = new CreatErroMessage(
+                    "Network error! Please reload your page!"
+                ).returnErrorCont();
+                main.prepend(errorMessage);
+                CreatErroMessage.removeError(errorMessage);
+            }
+        });
+}
+
+async function fetchUrl(url, page) {
+    let baseUrl = new URL(url);
+    baseUrl.searchParams.set("page", page);
+    try {
+        let popRes = await fetch(baseUrl);
+        if (popRes.ok) {
+            return await popRes.json();
+        } else {
+            console.log("Fetch function: error");
+            throw new NetworkError("Network error!");
+        }
+    } catch (error) {
+        if (error instanceof TypeError || error instanceof NetworkError) {
+            console.log("Fetch function: error 2");
+            throw new NetworkError("Network error!");
+        }
+    }
+}
+
+// load (results = results returned by fetching) in (conatiner = parent-cotainer to save each result) using (contentCreator = the kind of container for each result)
+function populateResults(container, results, contentCreator) {
+    container.innerHTML = ``;
+    for (let result of results) {
+        let cont = contentCreator(result);
+        container.append(cont);
+    }
+}
+
+// load popular movie page result (home)
+async function popularMoviePagePopulate(page) {
+    let results = await fetchUrl(
+        "https://api.themoviedb.org/3/discover/movie?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&sort_by=popularity.desc&include_adult=true&include_video=true",
+        page
+    );
+
+    if (!results) {
+        return;
+    }
+    totalHomePage = results.total_pages;
+
+    // popularMoviesPanel.innerHTML = ``;
+
+    populateResults(popularMoviesPanel, results.results, homeCreateVid);
+}
+
+// load trending movie page result (home)
+async function trendingMoviePagePopulate(page) {
+    let results = await fetchUrl(
+        "https://api.themoviedb.org/3/trending/movie/day?api_key=651ef57b1ca582995fef27ff08df6717",
+        page
+    );
+
+    if (!results) {
+        return;
+    }
+
+    // trendingMoviesPanel.innerHTML = ``;
+
+    populateResults(trendingMoviesPanel, results.results, homeCreateVid);
+}
+
+// load trending tvshow page result (home)
+async function trendingTvShowsPagePopulate(page) {
+    let results = await fetchUrl(
+        "https://api.themoviedb.org/3/trending/tv/day?api_key=651ef57b1ca582995fef27ff08df6717",
+        page
+    );
+
+    if (!results) {
+        return;
+    }
+    // trendingTvShowsPanel.innerHTML = ``;
+
+    populateResults(trendingTvShowsPanel, results.results, homeCreateVid);
+}
+
+// load trending person page result (home)
+async function trendingPersonPagePopulate(page) {
+    let results = await fetchUrl(
+        " https://api.themoviedb.org/3/trending/person/day?api_key=651ef57b1ca582995fef27ff08df6717",
+        page
+    );
+
+    if (!results) {
+        return;
+    }
+
+    // trendingpersonPanel.innerHTML = ``;
+
+    populateResults(
+        trendingpersonPanel,
+        results.results,
+        homeCreateVidTrendingPerson
+    );
+}
+
+// create pagination pages for homepage
+function loadingHomePages(event) {
+    let targetBtn = event.target.closest("[data-type|=btn]");
+    if (!targetBtn) {
+        return;
+    }
+    let specificBtn = targetBtn.dataset.type;
+
+    let currentNumb = +ulTag.querySelector(".active span").textContent;
+
+    switch (specificBtn) {
+        case "btn-Prev":
+            createpag(totalHomePage, currentNumb - 1);
+            popularMoviePagePopulate(currentNumb - 1);
+            trendingMoviePagePopulate(currentNumb - 1);
+            trendingTvShowsPagePopulate(currentNumb - 1);
+            trendingPersonPagePopulate(currentNumb - 1);
+            break;
+
+        case "btn-page":
+            let specificNum = +targetBtn.firstElementChild.textContent;
+            if (specificNum != currentNumb) {
+                createpag(totalHomePage, specificNum);
+                popularMoviePagePopulate(specificNum);
+                trendingMoviePagePopulate(specificNum);
+                trendingTvShowsPagePopulate(specificNum);
+                trendingPersonPagePopulate(specificNum);
+            }
+            break;
+
+        case "btn-Next":
+            createpag(totalHomePage, currentNumb + 1);
+            popularMoviePagePopulate(currentNumb + 1);
+            trendingMoviePagePopulate(currentNumb + 1);
+            trendingTvShowsPagePopulate(currentNumb + 1);
+            trendingPersonPagePopulate(currentNumb + 1);
+            break;
+    }
+}
+
+ulTag.addEventListener("click", loadingHomePages);
+
 window.addEventListener("load", async (event) => {
     await loadGenre();
     try {
@@ -360,36 +381,43 @@ window.addEventListener("load", async (event) => {
         createpag(totalHomePage, 1);
     } catch (error) {
         if (error instanceof NetworkError) {
-            let errorMessage = new CreatErroMessage(error.message).returnErrorCont();
+            let errorMessage = new CreatErroMessage(
+                error.message
+            ).returnErrorCont();
             main.prepend(errorMessage);
         }
     }
 });
 
-
-
-filterGroups.querySelectorAll('input').forEach(input => input.addEventListener('change', createFilterArray));
-
-
+filterGroups
+    .querySelectorAll("input")
+    .forEach((input) => input.addEventListener("change", createFilterArray));
 
 function createFilterArray(event) {
     let inputTarget = event.target;
-    inputTarget.checked ? filterSearchArray.push(inputTarget.value) : filterSearchArray = filterSearchArray.filter(value => value != inputTarget.value);
-    // console.log(filterSearchArray);
+    inputTarget.checked
+        ? filterSearchArray.push(inputTarget.value)
+        : (filterSearchArray = filterSearchArray.filter(
+              (value) => value != inputTarget.value
+          ));
 
     filterResult();
 }
 
 function filterResult() {
-    let allList = searchResultPanel.querySelector('.grid').querySelectorAll('[data-search="list"]');
+    let allList = searchResultPanel
+        .querySelector(".grid")
+        .querySelectorAll('[data-search="list"]');
 
     if (filterSearchArray.length != 0) {
-        allList.forEach(list => {
+        allList.forEach((list) => {
             let mediaType = list.dataset.mediaType;
-            filterSearchArray.indexOf(mediaType) == -1 ? list.hidden = true : list.hidden = false;
+            filterSearchArray.indexOf(mediaType) == -1
+                ? (list.hidden = true)
+                : (list.hidden = false);
         });
     } else {
-        allList.forEach(list => {
+        allList.forEach((list) => {
             list.hidden = false;
         });
     }
@@ -397,26 +425,21 @@ function filterResult() {
     filterNumberCont.innerHTML = filterSearchArray.length;
 }
 
-
 searchResultFilter.addEventListener("click", (event) => {
     filterGroups.classList.toggle("visible");
 });
 
-
-formSearch.addEventListener('click', event => {
-    // console.log(event.type);
-    // console.log('clicked');
+formSearch.addEventListener("click", (event) => {
     if (searchingFormClicked == 0) {
         event.preventDefault();
         searchingFormClicked = 1;
         formSearchBtn.previousElementSibling.focus();
-        // return false;
-    }else if (searchingFormClicked == 1) {
+    } else if (searchingFormClicked == 1) {
         formRemovePanels();
     }
-})
+});
 
-formSearch.addEventListener('submit', async event => {
+formSearch.addEventListener("submit", async (event) => {
     event.preventDefault();
     searchedWord = formSearch.querySelector("#search").value.trim();
 
@@ -425,19 +448,20 @@ formSearch.addEventListener('submit', async event => {
     if (mainNav.classList.contains("show")) {
         removeToggle();
     }
-    
+
     let filterHeading = searchResultPanel.querySelector(
         "#searchFilterHead span"
     );
     filterHeading.innerHTML = searchedWord;
     filterHeading.title = searchedWord;
 
-    filterGroups.querySelectorAll('input').forEach(input => input.checked = false);
+    filterGroups
+        .querySelectorAll("input")
+        .forEach((input) => (input.checked = false));
     filterSearchArray = [];
     filterNumberCont.innerHTML = 0;
 
     await searchingMedia(1);
-    // totalSearchPage = results.total_pages;
 
     createpag(totalSearchPage, 1);
 
@@ -446,9 +470,9 @@ formSearch.addEventListener('submit', async event => {
     ulTag.removeEventListener("click", moviesLoadingPages);
 
     ulTag.addEventListener("click", loadingSearchPages);
-    
+
     formSearchBtn.previousElementSibling.value = "";
-})
+});
 
 function formRemovePanels() {
     for (let panelLink of mainNav.querySelectorAll('a[href=""]')) {
@@ -465,54 +489,56 @@ function formRemovePanels() {
 }
 
 async function searchingMedia(page) {
-    // let results = await filterPopularity(
-    //     `https://api.themoviedb.org/3/search/multi?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&query=${searchedWord}&include_adult=true`,
-    //     page
-    // ); // fetchUrl
-
-    let results = await fetchUrl(
-        `https://api.themoviedb.org/3/search/multi?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&query=${searchedWord}&include_adult=true`,
-        page
-    ); // fetchUrl
-
-    if (!results) {
-        return;
-    }
-
-    totalSearchPage = results.total_pages;
+    let spinnerCont = spinner();
 
     let grid = searchResultPanel.querySelector(".grid");
     grid.innerHTML = "";
+    grid.before(spinnerCont);
+    grid.classList.add('fade_out');
+    try {
+        let results = await fetchUrl(
+            `https://api.themoviedb.org/3/search/multi?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US&query=${searchedWord}&include_adult=true`,
+            page
+        );
 
-    if (results.results.length == 0) {
-        grid.innerHTML = 'No result';
-        return;
-    }
+        totalSearchPage = results.total_pages;
 
-    for (let result of results.results) {
-        let li;
-        if (result.media_type == "tv" || result.media_type == "movie") {
-            li = otherContainers(result);
-            // grid.append(li);    
-        } 
-        else if (result.media_type == "person") {
-            li = homeCreateVidTrendingPerson(result);
-            li.classList.add('search__person');
-            // grid.append(li);
+        if (results.results.length == 0) {
+            grid.innerHTML = "No result";
+            return;
         }
 
-        li.setAttribute('data-media-type', result.media_type);
-        li.setAttribute('data-search', 'list');
-        grid.append(li);
+        for (let result of results.results) {
+            let li;
+            if (result.media_type == "tv" || result.media_type == "movie") {
+                li = otherContainers(result);
+            } else if (result.media_type == "person") {
+                li = homeCreateVidTrendingPerson(result);
+                li.classList.add("search__person");
+            }
 
-        // console.log(result.media_type);
+            li.setAttribute("data-media-type", result.media_type);
+            li.setAttribute("data-search", "list");
+            grid.append(li);
+        }
+
+        filterResult();
+    } catch (error) {
+        // console.warn(error);
+        if (error instanceof NetworkError) {
+            // console.warn(error);
+            let errCont = new CreatErroMessage(error.message).returnErrorCont();
+            grid.prepend(errCont);
+            CreatErroMessage.removeError(errCont);
+        }
+    } finally {
+        spinnerCont.classList.add('fade_out');
+        
+        setTimeout(() => {
+            grid.classList.remove('fade_out');
+            spinnerCont.remove();
+        }, 550);
     }
-
-    filterResult();
-}
-
-function searchingLoadPages(to) {
-    
 }
 
 async function loadingSearchPages(event) {
@@ -545,12 +571,8 @@ async function loadingSearchPages(event) {
     }
 }
 
-
-
-
-// console.log(filterTvShowForm);
-
 filterMovieForm.addEventListener("input", async (event) => {
+    // console.log('ysysy')
     await fetchMovie(filterMovieForm.value, 1);
     createpag(totalMoviePage, 1);
 });
@@ -558,57 +580,9 @@ filterMovieForm.addEventListener("input", async (event) => {
 filterTvShowForm.addEventListener("input", async (event) => {
     await fetchtvShow(filterTvShowForm.value, 1);
     createpag(totalTvShowPage, 1);
-    // console.log("yes");
 });
 
-function loadingHomePages(event) {
-    let targetBtn = event.target.closest("[data-type|=btn]");
-    if (!targetBtn) {
-        return;
-    }
-    let specificBtn = targetBtn.dataset.type;
-
-    let currentNumb = +ulTag.querySelector(".active span").textContent;
-
-    // console.log(totalHomePage)
-    switch (specificBtn) {
-        case "btn-Prev":
-            // createpag(totalPages, currentNumb - 1);
-            createpag(totalHomePage, currentNumb - 1);
-            popularMoviePagePopulate(currentNumb - 1);
-            trendingMoviePagePopulate(currentNumb - 1);
-            trendingTvShowsPagePopulate(currentNumb - 1);
-            trendingPersonPagePopulate(currentNumb - 1);
-            break;
-
-        case "btn-page":
-            let specificNum = +targetBtn.firstElementChild.textContent;
-            if (specificNum != currentNumb) {
-                // createpag(totalPages, specificNum);
-                createpag(totalHomePage, specificNum);
-                popularMoviePagePopulate(specificNum);
-                trendingMoviePagePopulate(specificNum);
-                trendingTvShowsPagePopulate(specificNum);
-                trendingPersonPagePopulate(specificNum);
-            }
-            break;
-
-        case "btn-Next":
-            // createpag(totalPages, currentNumb + 1);
-            createpag(totalHomePage, currentNumb + 1);
-            popularMoviePagePopulate(currentNumb + 1);
-            trendingMoviePagePopulate(currentNumb + 1);
-            trendingTvShowsPagePopulate(currentNumb + 1);
-            trendingPersonPagePopulate(currentNumb + 1);
-            break;
-    }
-}
-
-ulTag.addEventListener("click", loadingHomePages);
-
-
-
-
+// this is use for accessibility(screen readers), also used to change pagination pages and events
 mainNav.addEventListener("click", async (event) => {
     event.preventDefault();
     let targetPanelLink = event.target.closest('a[href=""]');
@@ -647,7 +621,6 @@ mainNav.addEventListener("click", async (event) => {
     allPanels[parentPosition].setAttribute("aria-hidden", false);
 
     allPanels[parentPosition].classList.add("active-panel");
-    // console.log(targetPanelLink.innerHTML);
 
     switch (targetPanelLink.innerHTML) {
         case "movies":
@@ -666,14 +639,12 @@ mainNav.addEventListener("click", async (event) => {
             filterTvShowForm.options[0].selected = true;
             await fetchtvShow("popular", 1);
             createpag(totalTvShowPage, 1);
-            // console.log('found');
 
             ulTag.removeEventListener("click", loadingHomePages);
             ulTag.removeEventListener("click", moviesLoadingPages);
             ulTag.removeEventListener("click", loadingSearchPages);
 
             ulTag.addEventListener("click", tvShowLoadingPages);
-            // tvShowLoadingPages
             break;
 
         case "home":
@@ -681,8 +652,6 @@ mainNav.addEventListener("click", async (event) => {
             trendingMoviePagePopulate(1);
             trendingTvShowsPagePopulate(1);
             trendingPersonPagePopulate(1);
-            // console.log(totalHomePage);
-            // console.log('Done');
             createpag(totalHomePage, 1);
 
             ulTag.addEventListener("click", loadingHomePages);
@@ -696,11 +665,6 @@ mainNav.addEventListener("click", async (event) => {
 });
 
 async function fetchtvShow(value, page) {
-    // let results = await filterPopularity(
-    //     `https://api.themoviedb.org/3/tv/${value}?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US`,
-    //     page
-    // );
-
     let results = await fetchUrl(
         `https://api.themoviedb.org/3/tv/${value}?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US`,
         page
@@ -714,7 +678,7 @@ async function fetchtvShow(value, page) {
 
     let grid = tvShowPanel.querySelector(".grid");
 
-    grid.innerHTML = ``;
+    // grid.innerHTML = ``;
     const formHead = document.getElementById("tvShowFilterHead");
 
     let headContent;
@@ -737,41 +701,39 @@ async function fetchtvShow(value, page) {
     }
     formHead.innerHTML = headContent;
 
-    // console.log(results);
-    for (let result of results.results) {
-        let li = otherContainers(result);
-        grid.append(li);
-    }
-    // ulTag.removeEventListener('click', loadingHomePages);
+    populateResults(grid, results.results, otherContainers);
 }
 
 async function fetchMovie(value, page) {
-    // let results = await filterPopularity(
-    //     `https://api.themoviedb.org/3/movie/${value}?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US`,
-    //     page
-    // );
-
-    let results = await fetchUrl(
-        `https://api.themoviedb.org/3/movie/${value}?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US`,
-        page
-    );
-
-    if (!results) {
-        return;
-    }
-    totalMoviePage = results.total_pages;
+    console.log('fetching movie');
     let grid = moviePanel.querySelector(".grid");
-    grid.innerHTML = ``;
-    const formHead = document.getElementById("movieFilterHead");
-    if (value == "popular") {
-        formHead.innerHTML = "POPULAR MOVIES";
-    } else if (value == "top_rated") {
-        formHead.innerHTML = "TOP RATED MOVIES";
-    }
-    // console.log(results);
-    for (let result of results.results) {
-        let li = otherContainers(result);
-        grid.append(li);
+    try {
+        let results = await fetchUrl(
+            `https://api.themoviedb.org/3/movie/${value}?api_key=651ef57b1ca582995fef27ff08df6717&language=en-US`,
+            page
+        );
+    
+        if (!results) {
+            return;
+        }
+        totalMoviePage = results.total_pages;
+        // let grid = moviePanel.querySelector(".grid");
+    
+        const formHead = document.getElementById("movieFilterHead");
+        if (value == "popular") {
+            formHead.innerHTML = "POPULAR MOVIES";
+        } else if (value == "top_rated") {
+            formHead.innerHTML = "TOP RATED MOVIES";
+        }
+    
+        populateResults(grid, results.results, otherContainers);
+    } catch (error) {
+        if (error instanceof NetworkError) {
+            console.warn(error.message);
+            let errCont = new CreatErroMessage(error.message).returnErrorCont();
+            grid.prepend(errCont);
+            CreatErroMessage.removeError(errCont);
+        }
     }
     // ulTag.removeEventListener('click', loadingHomePages);
 }
@@ -787,7 +749,6 @@ async function moviesLoadingPages(event) {
 
     switch (specificBtn) {
         case "btn-Prev":
-            // console.log('btn-prev');
             createpag(totalMoviePage, currentNumb - 1);
             fetchMovie(filterMovieForm.value, currentNumb - 1);
             break;
@@ -818,10 +779,7 @@ async function tvShowLoadingPages(event) {
 
     switch (specificBtn) {
         case "btn-Prev":
-            // console.log('btn-prev');
-            // createpag(totalMoviePage, currentNumb - 1);
             createpag(totalTvShowPage, currentNumb - 1);
-            // fetchMovie(filterMovieForm.value, currentNumb - 1);
             fetchtvShow(filterTvShowForm.value, currentNumb - 1);
             break;
 
@@ -830,14 +788,11 @@ async function tvShowLoadingPages(event) {
             if (specificNum != currentNumb) {
                 createpag(totalTvShowPage, specificNum);
             }
-            // fetchMovie(filterMovieForm.value, specificNum);
             fetchtvShow(filterTvShowForm.value, specificNum);
             break;
 
         case "btn-Next":
-            // createpag(totalMoviePage, currentNumb + 1);
             createpag(totalTvShowPage, currentNumb + 1);
-            // fetchMovie(filterMovieForm.value, currentNumb + 1);
             fetchtvShow(filterTvShowForm.value, currentNumb + 1);
             break;
     }
@@ -888,16 +843,12 @@ function otherContainers(result) {
     return li;
 }
 
-
-
-
-
-
-function switchCard(event, parentPanel) {
+main.addEventListener("click", (event) => {
+    // flipping of card
     let target = event.target.closest('[data-btn="switch-card"]');
     if (!target) return;
 
-    for (let card of parentPanel.querySelectorAll(".card")) {
+    for (let card of main.querySelectorAll(".card")) {
         if (card == target.parentElement.closest(".card")) {
             continue;
         }
@@ -905,17 +856,7 @@ function switchCard(event, parentPanel) {
     }
 
     target.parentElement.closest(".card").classList.toggle("flipped");
-}
-
-// for (let panel of document.querySelectorAll(".panel")) {
-//     panel.addEventListener("click", (event) => {
-//         switchCard(event, panel);
-//     });
-// }
-
-main.addEventListener('click', event => {
-    switchCard(event, main);
-})
+});
 
 function homeCreateVid(result) {
     let resultGenre = [];
@@ -960,10 +901,6 @@ function homeCreateVid(result) {
     return div;
 }
 
-
-
-
-
 function homeCreateVidTrendingPerson(result) {
     let imgSrc = "../png/001-no-photo.png";
     if (result.profile_path) {
@@ -972,7 +909,12 @@ function homeCreateVidTrendingPerson(result) {
 
     let knownFor = ["No information available"];
 
-    if ( !(Object.keys(result.known_for).length === 0 && result.known_for.constructor === Object ) ) {
+    if (
+        !(
+            Object.keys(result.known_for).length === 0 &&
+            result.known_for.constructor === Object
+        )
+    ) {
         knownFor = [];
         for (let movie of result.known_for) {
             knownFor.push(movie.original_title);
@@ -1006,13 +948,3 @@ function homeCreateVidTrendingPerson(result) {
     </div>`;
     return div;
 }
-
-
-
-
-
-
-
-
-
-
