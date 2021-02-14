@@ -662,7 +662,6 @@ main {
           flex-flow: row wrap;
   border-radius: 5rem;
   padding: 1rem;
-  background-color: var(--nav-bg);
   margin-top: 9rem;
 }
 
