@@ -660,9 +660,9 @@ main {
   -webkit-box-direction: normal;
       -ms-flex-flow: row wrap;
           flex-flow: row wrap;
-  gap: 2rem 0.1rem;
   border-radius: 5rem;
   padding: 1rem;
+  background-color: var(--nav-bg);
   margin-top: 9rem;
 }
 
@@ -682,16 +682,12 @@ main {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-}
-
-.pagination li:not(:last-child) {
-  margin-right: 1rem;
+  margin: 2rem 0.7rem;
 }
 
 .pagination li.numb {
   height: 4rem;
   width: 4rem;
-  margin: 0 0.5rem;
 }
 
 .pagination .btn {
@@ -716,6 +712,57 @@ main {
 .pagination .active, .pagination .numb:hover, .pagination .btn {
   background-color: var(--red);
   color: #fff;
+}
+
+footer {
+  margin-top: 12rem;
+}
+
+.social__links {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.social__links > a {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0  3.5rem;
+          flex: 0 0  3.5rem;
+  color: inherit;
+  padding: 0.5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.social__links > a:focus {
+  outline: 0.2rem solid #a239;
+}
+
+.social__links > a:hover {
+  background-color: #a239;
+}
+
+.social__links > a:hover svg {
+  fill: var(--nav-bg);
+}
+
+.social__links > a svg {
+  fill: currentColor;
+  -webkit-transition: all 0.4s linear;
+  transition: all 0.4s linear;
+}
+
+.copy {
+  background-color: var(--nav-bg);
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2.8rem 1.5rem;
 }
 
 .search {
