@@ -33,7 +33,9 @@ historyBtn.addEventListener('click', event => {
     historyBtn.classList.add('disabled');
 })
 
-closeHistoryBtn.addEventListener('click', event => {
+closeHistoryBtn.addEventListener('click', closeHistoryContainer);
+
+function closeHistoryContainer(event) {
     historyContainer.classList.remove('listshow');
 
     let buttons = historyContainer.querySelectorAll('button');
@@ -43,7 +45,7 @@ closeHistoryBtn.addEventListener('click', event => {
     })
 
     historyBtn.classList.remove('disabled');
-})
+}
 
 const form = document.forms[0];
 
@@ -59,40 +61,44 @@ function emptyHistoryContent() {
     closeHistoryBtn.after(emptyListPara);
 }
 
+
 historyContainer.addEventListener('click', event => {
-    let targetClose = event.target.closest(`[data-btnType="delete"]`)
-    if (!targetClose) {
-        return;
-    }
-    let listContent = targetClose.previousElementSibling.textContent;
-
-    userHistoryLists = userHistoryLists.filter(content => content != listContent);
-
-    localStorage.setItem("searched", JSON.stringify(userHistoryLists));
-    // if (userHistoryLists == 0) {
-    //     emptyHistoryContent();
-    // }
-    let parentList = targetClose.parentElement;
+    let targetBtn = event.target.closest('button');
     
-    parentList.classList.add('remove-list');
-    setTimeout(() => {
-        parentList.remove();
-        // if (!closeHistoryBtn.nextElementSibling) {
-        //     emptyHistoryContent();
-        // }
-        // if (userHistoryLists.length == 0) {
-        //     emptyHistoryContent();
-        // }
-    }, 2100);
-    if (userHistoryLists.length == 0) {
+    if (!targetBtn) return;
+
+    let btnData = targetBtn.dataset.btntype;
+
+    if (btnData == 'delete') {
+        let listContent = targetBtn.previousElementSibling.textContent;
+
+        userHistoryLists = userHistoryLists.filter(content => content != listContent);
+
+        localStorage.setItem("searched", JSON.stringify(userHistoryLists));
+
+        let parentList = targetBtn.parentElement;
+        
+        parentList.classList.add('remove-list');
         setTimeout(() => {
-            emptyHistoryContent();
+            parentList.remove();
         }, 2100);
+        if (userHistoryLists.length == 0) {
+            setTimeout(() => {
+                emptyHistoryContent();
+            }, 2100);
+        }    
+    } else if (btnData == 'location') {
+        let location = targetBtn.textContent;
+        populateResult(location);
+
+        closeHistoryContainer();
     }
+    
 })
 
 function createHistoryListCont(input) {
     let li = document.createElement('li');
+    li.setAttribute('data-location', input);
     li.innerHTML = `<button tabindex="-1" data-btnType="location">${input}</button><button aria-label="delete list" tabindex="-1" class="history__delete" data-btnType="delete"></button>`
     return li;
 }
@@ -388,7 +394,8 @@ async function populateResult(userInput) {
                 closeHistoryBtn.nextElementSibling.remove();
             }
 
-            if (userHistoryLists.length >= 8) {
+            // maximum of 22 history searches
+            if (userHistoryLists.length >= 22) {
                 userHistoryLists.pop();
                 let lastList = historyContainer.lastElementChild;
                 lastList.classList.add('remove-list');
@@ -397,17 +404,27 @@ async function populateResult(userInput) {
                 }, 2000);
             }
 
+            // check if history has searched location
             let searchedFound = userHistoryLists.some(list => list.toLowerCase() == userInput.toLowerCase());
 
+            // if it doesn't have searched location, add searched location to the beginning of the list 
             if (!searchedFound) {
-                // userHistoryLists.push(userInput);
+                
                 userHistoryLists.unshift(userInput);
 
                 let searchList = createHistoryListCont(userInput);
         
                 closeHistoryBtn.after(searchList);
         
-                // localStorage.setItem('searched', JSON.stringify(userHistoryLists));    
+            } else if (searchedFound) { // if it has searched location, move it to the beginning of the list
+                userHistoryLists = userHistoryLists.filter(list => list.toLowerCase() != userInput.toLowerCase());
+                userHistoryLists.unshift(userInput);
+                
+                for (let li of historyContainer.querySelectorAll('li')) {
+                    if (li.dataset.location.toLowerCase() == userInput.toLowerCase()) {
+                        historyContainer.firstElementChild.after(li);
+                    }
+                }
             }
     
             localStorage.setItem('searched', JSON.stringify(userHistoryLists));
@@ -441,17 +458,6 @@ window.addEventListener('load', event => {
             emptyHistoryContent();
             userHistoryLists = [];    
     }
-    // if (userHistoryLists) {
-    //     userHistoryLists.forEach(list => {
-    //         closeHistoryBtn.after(createHistoryListCont(list));
-    //     })
-    // } else if(userHistoryLists.length == 0) {
-    //     emptyHistoryContent();
-    //     // userHistoryLists = [];
-    // } else {
-    //     emptyHistoryContent();
-    //     userHistoryLists = [];
-    // }
 })
 
 // fetch and populate searched result
@@ -480,5 +486,7 @@ async function getWeatherData(userInput) {
 }
 
 form.addEventListener('submit', fetchWeather);
+
+form.addEventListener('click', closeHistoryContainer);
 
 // http://openweathermap.org/img/wn/13d@2x.png
